@@ -1,25 +1,131 @@
+<link rel="stylesheet" href="lib/css/bootstrap4.6.1.min.css">
+<script src="lib/scripts/jquery.slim.min.js"></script>
+<script src="lib/scripts/bootstrap4.6.1.min.js"></script>
+
 <script>
-var sar_amount_to_send = parseFloat(10000)
-var sar_to_inr = 20.68
-var gold_rate_10g_ksa_sar = 2000
-var gold_rate_10g_ind_inr = 49900
 
-var gold_weight_possible_per_tola = Math.round(sar_amount_to_send/gold_rate_10g_ksa_sar,2)
-var purchased_gold_price_ksa = gold_weight_possible_per_tola * gold_rate_10g_ksa_sar
-var purchased_gold_price_in_ksa_to_inr = purchased_gold_price_ksa *  sar_to_inr
-var exchanged_amount_sent = sar_amount_to_send * sar_to_inr
-var purchased_gold_price_in_ind_inr = gold_weight_possible_per_tola * gold_rate_10g_ind_inr
+function calcluate(){
+
+    var sar_amount_to_send = parseFloat(document.getElementById('sar_amount_to_send').value)
+    var sar_to_inr = parseFloat(document.getElementById('sar_to_inr').value)
+    var gold_rate_10g_ksa_sar = parseFloat(document.getElementById('gold_rate_10g_ksa_sar').value)
+    var gold_rate_10g_ind_inr = parseFloat(document.getElementById('gold_rate_10g_ind_inr').value)
+
+    if(isNaN(sar_amount_to_send) || isNaN(sar_amount_to_send) || isNaN(sar_amount_to_send) || isNaN(sar_amount_to_send)){
+        alert('Please provide valid input')
+        return
+    }
+
+    var gold_weight_possible_per_tola = Math.round((sar_amount_to_send/gold_rate_10g_ksa_sar),2)
+    var purchased_gold_price_ksa = gold_weight_possible_per_tola * gold_rate_10g_ksa_sar
+    var purchased_gold_price_in_ksa_to_inr = purchased_gold_price_ksa *  sar_to_inr
+    var exchanged_amount_sent = sar_amount_to_send * sar_to_inr
+    var purchased_gold_price_in_ind_inr = gold_weight_possible_per_tola * gold_rate_10g_ind_inr
+
+    var output = '<table class="table table-striped">'
+    
+    output = output + '<tr>'
+    output = output + '<td>Gold purchase capacity per tola</td>'
+    output = output + '<td>'+gold_weight_possible_per_tola+'</td>'
+    output = output + '</tr>'
+    
+    output = output + '<tr>'
+    output = output + '<td>Gold Purchased Value In Ind (INR)</td>'
+    output = output + '<td>'+purchased_gold_price_in_ind_inr+'</td>'
+    output = output + '</tr>'
+
+    output = output + '<tr>'
+    output = output + '<td>SAR Sent Amount Value (INR)</td>'
+    output = output + '<td>'+exchanged_amount_sent+'</td>'
+    output = output + '</tr>'
+
+    output = output + '<tr>'
+    output = output + '<td>Diff</td>'
+    output = output + '<td>'+(purchased_gold_price_in_ind_inr-exchanged_amount_sent)+'</td>'
+    output = output + '</tr>'
+
+    output = output + '</table>'
 
 
-console.log('Amount to send in SAR: '+(sar_amount_to_send)+' --- SAR_INR: '+(sar_to_inr)+' --- Gold Rate KSA: '+(gold_rate_10g_ksa_sar)+' --- Gold Rate IND: '+(gold_rate_10g_ind_inr))
-console.log('Gold purchase capacity in tola',gold_weight_possible_per_tola)
-console.log('Gold Purchased Value In Ind for '+(gold_weight_possible_per_tola)+' tola', purchased_gold_price_in_ind_inr)
-console.log('SAR sent amount '+(sar_amount_to_send)+' value', exchanged_amount_sent)
+    //output = output+'Amount to send in SAR: '+(sar_amount_to_send)+' --- SAR_INR: '+(sar_to_inr)+' --- Gold Rate KSA: '+(gold_rate_10g_ksa_sar)+' --- Gold Rate IND: '+(gold_rate_10g_ind_inr)
+    // output = output+'Gold purchase capacity in tola: '+gold_weight_possible_per_tola
+    // output = output+'Gold Purchased Value In Ind for '+(gold_weight_possible_per_tola)+' tola '+ purchased_gold_price_in_ind_inr
+    // output = output+'SAR sent amount '+(sar_amount_to_send)+' value: '+ exchanged_amount_sent
 
-console.log('Diff:',(purchased_gold_price_in_ind_inr-exchanged_amount_sent))
+    // output = output+'Diff: '+(purchased_gold_price_in_ind_inr-exchanged_amount_sent)
+
+    document.getElementById("output").innerHTML = output
+
+}
+
+function clearForm(){
+    document.getElementById('sar_amount_to_send').value = ''
+    document.getElementById('sar_to_inr').value = ''
+    document.getElementById('gold_rate_10g_ksa_sar').value = ''
+    document.getElementById('gold_rate_10g_ind_inr').value = ''
+
+    document.getElementById("output").innerHTML = ''
+
+}
 
 </script>
 
 
+<div class="card">
+    <div class="card-header">
+        Gold To Currency
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-2">&nbsp;</div>
+            <div class="col-md-8">
+                <div class="form-group row">
+                    <label for="usr" class="col-md-2">SAR-INR:</label>
+                    <div class="col-md-10">
+                        <input type="text" class="form-control" id="sar_to_inr">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="usr" class="col-md-2">Amount to Send (SAR):</label>
+                    <div class="col-md-10">
+                        <input type="text" class="form-control" id="sar_amount_to_send">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="pwd" class="col-md-2">Gold Rate 10g KSA (SAR):</label>
+                    <div class="col-md-10">
+                        <input type="text" class="form-control" id="gold_rate_10g_ksa_sar">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="pwd" class="col-md-2">Gold Rate 10g IND (INR):</label>
+                    <div class="col-md-10">
+                        <input type="text" class="form-control" id="gold_rate_10g_ind_inr">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">&nbsp;</div>
+        </div>
 
-Gold To Currency
+    </div>
+    <div class="card-footer">
+        <button type="button" class="btn btn-primary" onclick="calcluate()">Submit</button>
+        <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear</button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">Result</div>
+    <div class="card-body">
+
+        <div class="row">
+
+            <div class="col-md-4">&nbsp;</div>
+            <div class="col-md-4">
+                <div id="output"></div>
+            </div>
+            <div class="col-md-4">&nbsp;</div>
+
+        </div>
+    </div>
+</div>
