@@ -1,1 +1,25 @@
-Hello World
+<script>
+var sar_amount_to_send = parseFloat(10000)
+var sar_to_inr = 20.68
+var gold_rate_10g_ksa_sar = 2000
+var gold_rate_10g_ind_inr = 49900
+
+var gold_weight_possible_per_tola = Math.round(sar_amount_to_send/gold_rate_10g_ksa_sar,2)
+var purchased_gold_price_ksa = gold_weight_possible_per_tola * gold_rate_10g_ksa_sar
+var purchased_gold_price_in_ksa_to_inr = purchased_gold_price_ksa *  sar_to_inr
+var exchanged_amount_sent = sar_amount_to_send * sar_to_inr
+var purchased_gold_price_in_ind_inr = gold_weight_possible_per_tola * gold_rate_10g_ind_inr
+
+
+console.log('Amount to send in SAR: '+str(sar_amount_to_send)+' --- SAR_INR: '+str(sar_to_inr)+' --- Gold Rate KSA: '+str(gold_rate_10g_ksa_sar)+' --- Gold Rate IND: '+str(gold_rate_10g_ind_inr))
+console.log('Gold purchase capacity in tola',gold_weight_possible_per_tola)
+console.log('Gold Purchased Value In Ind for '+str(gold_weight_possible_per_tola)+' tola', purchased_gold_price_in_ind_inr)
+console.log('SAR sent amount '+str(sar_amount_to_send)+' value', exchanged_amount_sent)
+
+console.log('Diff:',(purchased_gold_price_in_ind_inr-exchanged_amount_sent))
+
+</script>
+
+
+
+Gold To Currency
