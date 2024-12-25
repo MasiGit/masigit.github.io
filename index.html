@@ -21,6 +21,16 @@
   <script src="lib/scripts/bootstrap4.6.1.min.js"></script>
 
   <script>
+    // Hide both sections by default, then show the requested one
+    function showSection(sectionID) {
+      // Hide both
+      document.getElementById("gtmSection").style.display = "none";
+      document.getElementById("stockAverageSection").style.display = "none";
+
+      // Show the requested section
+      document.getElementById(sectionID).style.display = "block";
+    }
+
     /********************************
      * 1) GOLD TO CURRENCY (GTM)
      ********************************/
@@ -148,7 +158,19 @@
       document.getElementById('new_shares').value     = '';
       document.getElementById("avg_output").innerHTML = '';
     }
+
+    // On page load, show GTM by default
+    document.addEventListener('DOMContentLoaded', function(){
+      showSection("gtmSection"); 
+    });
   </script>
+
+  <style>
+    /* Just an optional bit of styling to emphasize hidden vs shown sections */
+    #gtmSection, #stockAverageSection {
+      margin-top: 1rem;
+    }
+  </style>
 </head>
 <body>
 
@@ -158,113 +180,122 @@
     <!-- Main Content (Left Column) -->
     <div class="col-9">
 
-      <!-- GTM Section -->
-      <div id="gtm" class="card mt-3">
-        <div class="card-header">
-          GTM
-        </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-3">&nbsp;</div>
-            <div class="col-6">
-              
-              <div class="form-group row">
-                <label for="sar_to_inr">SAR-INR:</label>
-                <input type="text" class="form-control" id="sar_to_inr">
-              </div>
-              
-              <div class="form-group row">
-                <label for="sar_amount_to_send">Amount to Send (SAR):</label>
-                <input type="text" class="form-control" id="sar_amount_to_send">
-              </div>
-              
-              <div class="form-group row">
-                <label for="gold_rate_10g_ksa_sar">Gold Rate 10g KSA (SAR):</label>
-                <input type="text" class="form-control" id="gold_rate_10g_ksa_sar">
-              </div>
-              
-              <div class="form-group row">
-                <label for="gold_rate_10g_ind_inr">Gold Rate 10g IND (INR):</label>
-                <input type="text" class="form-control" id="gold_rate_10g_ind_inr">
-              </div>
+      <!-- 1) GTM Section -->
+      <div id="gtmSection"> 
+        <!-- GTM Card -->
+        <div class="card">
+          <div class="card-header">
+            GTM
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-3">&nbsp;</div>
+              <div class="col-6">
+                
+                <div class="form-group row">
+                  <label for="sar_to_inr">SAR-INR:</label>
+                  <input type="text" class="form-control" id="sar_to_inr">
+                </div>
+                
+                <div class="form-group row">
+                  <label for="sar_amount_to_send">Amount to Send (SAR):</label>
+                  <input type="text" class="form-control" id="sar_amount_to_send">
+                </div>
+                
+                <div class="form-group row">
+                  <label for="gold_rate_10g_ksa_sar">Gold Rate 10g KSA (SAR):</label>
+                  <input type="text" class="form-control" id="gold_rate_10g_ksa_sar">
+                </div>
+                
+                <div class="form-group row">
+                  <label for="gold_rate_10g_ind_inr">Gold Rate 10g IND (INR):</label>
+                  <input type="text" class="form-control" id="gold_rate_10g_ind_inr">
+                </div>
 
+              </div>
+              <div class="col-3">&nbsp;</div>
             </div>
-            <div class="col-3">&nbsp;</div>
+          </div>
+          <div class="card-footer">
+            <button type="button" class="btn btn-primary" onclick="calcluate()">Submit</button>
+            <button type="button" class="btn btn-secondary" onclick="clearFormGTM()">Clear</button>
           </div>
         </div>
-        <div class="card-footer">
-          <button type="button" class="btn btn-primary" onclick="calcluate()">Submit</button>
-          <button type="button" class="btn btn-secondary" onclick="clearFormGTM()">Clear</button>
-        </div>
-      </div>
 
-      <!-- GTM Result -->
-      <div class="card mt-3">
-        <div class="card-header">Result</div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-3">&nbsp;</div>
-            <div class="col-6">
-              <div id="output"></div>
+        <!-- GTM Result Card -->
+        <div class="card mt-3">
+          <div class="card-header">Result</div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-3">&nbsp;</div>
+              <div class="col-6">
+                <div id="output"></div>
+              </div>
+              <div class="col-3">&nbsp;</div>
             </div>
-            <div class="col-3">&nbsp;</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Stock Average Section -->
-      <div id="stock-average" class="card mt-5">
-        <div class="card-header">
-          Stock Average
-        </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-3">&nbsp;</div>
-            <div class="col-6">
-              
-              <div class="form-group row">
-                <label for="cost_price">Cost Price:</label>
-                <input type="text" class="form-control" id="cost_price">
-              </div>
-              
-              <div class="form-group row">
-                <label for="quantity_held">Quantity Held:</label>
-                <input type="text" class="form-control" id="quantity_held">
-              </div>
-              
-              <div class="form-group row">
-                <label for="market_price">Market Price:</label>
-                <input type="text" class="form-control" id="market_price">
-              </div>
-              
-              <div class="form-group row">
-                <label for="new_shares">New Shares to Buy:</label>
-                <input type="text" class="form-control" id="new_shares">
-              </div>
-
-            </div>
-            <div class="col-3">&nbsp;</div>
-          </div>
-        </div>
-        <div class="card-footer">
-          <button type="button" class="btn btn-primary" onclick="calculateNewAverage()">Submit</button>
-          <button type="button" class="btn btn-secondary" onclick="clearFormStock()">Clear</button>
-        </div>
-      </div>
-
-      <!-- Stock Average Result -->
-      <div class="card mt-3">
-        <div class="card-header">Stock Average Result</div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-3">&nbsp;</div>
-            <div class="col-6">
-              <div id="avg_output"></div>
-            </div>
-            <div class="col-3">&nbsp;</div>
           </div>
         </div>
       </div>
+      <!-- End GTM Section -->
+
+
+      <!-- 2) Stock Average Section -->
+      <div id="stockAverageSection" style="display: none;"> 
+        <!-- Stock Average Card -->
+        <div class="card">
+          <div class="card-header">
+            Stock Average
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-3">&nbsp;</div>
+              <div class="col-6">
+                
+                <div class="form-group row">
+                  <label for="cost_price">Cost Price:</label>
+                  <input type="text" class="form-control" id="cost_price">
+                </div>
+                
+                <div class="form-group row">
+                  <label for="quantity_held">Quantity Held:</label>
+                  <input type="text" class="form-control" id="quantity_held">
+                </div>
+                
+                <div class="form-group row">
+                  <label for="market_price">Market Price:</label>
+                  <input type="text" class="form-control" id="market_price">
+                </div>
+                
+                <div class="form-group row">
+                  <label for="new_shares">New Shares to Buy:</label>
+                  <input type="text" class="form-control" id="new_shares">
+                </div>
+
+              </div>
+              <div class="col-3">&nbsp;</div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button type="button" class="btn btn-primary" onclick="calculateNewAverage()">Submit</button>
+            <button type="button" class="btn btn-secondary" onclick="clearFormStock()">Clear</button>
+          </div>
+        </div>
+
+        <!-- Stock Average Result Card -->
+        <div class="card mt-3">
+          <div class="card-header">Stock Average Result</div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-3">&nbsp;</div>
+              <div class="col-6">
+                <div id="avg_output"></div>
+              </div>
+              <div class="col-3">&nbsp;</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End Stock Average Section -->
 
     </div>
     <!-- End of Main Content (Left Column) -->
@@ -278,14 +309,20 @@
         </div>
         <ul class="list-group list-group-flush">
           <li class="list-group-item">
-            <!-- GTM Link -->
-            <a class="text-decoration-none" href="#gtm">
+            <a 
+              href="javascript:void(0)" 
+              class="text-decoration-none" 
+              onclick="showSection('gtmSection')"
+            >
               <i class="fas fa-coins"></i> GTM
             </a>
           </li>
           <li class="list-group-item">
-            <!-- Stock Average Link -->
-            <a class="text-decoration-none" href="#stock-average">
+            <a 
+              href="javascript:void(0)" 
+              class="text-decoration-none" 
+              onclick="showSection('stockAverageSection')"
+            >
               <i class="fas fa-chart-line"></i> Stock Average
             </a>
           </li>
