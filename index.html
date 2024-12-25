@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>GTM & Stock Average App (USD + Responsive)</title>
-  
+  <title>GTM & Stock Average App</title>
+
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="lib/css/bootstrap4.6.1.min.css">
   
@@ -11,19 +11,18 @@
   <link 
     rel="stylesheet" 
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" 
-    integrity="sha512-OkD1nCn6dZzJtC6OGx0Gv82ZASVal8QXYeJl5Q2OWq+BW+2FYD44s06Idq0gVaYM3Bh1qp0vMG2sT9lZdbi3Fw==" 
+    integrity="sha512-OkD1nCn6dZzJtC6OGx0Gv82ZASVal8QXYeJl5Q2OWq+BW+2FYD44s06Idq0GvTY0gVaYM3Bh1qp0vMG2sT9lZdbi3Fw==" 
     crossorigin="anonymous" 
     referrerpolicy="no-referrer" 
   />
 
-  <!-- jQuery -->
+  <!-- jQuery & Bootstrap JS -->
   <script src="lib/scripts/jquery.slim.min.js"></script>
-  <!-- Bootstrap JS -->
   <script src="lib/scripts/bootstrap4.6.1.min.js"></script>
 
   <script>
     /****************************************
-     * Show & Hide Sections
+     * Toggle Which Section is Shown
      ****************************************/
     function showSection(sectionID) {
       // Hide both
@@ -49,37 +48,24 @@
         isNaN(gold_rate_10g_usd) || 
         isNaN(gold_rate_10g_ind_inr)
       ){
-        alert('Please provide valid input in GTM form (USD).');
+        alert('Please provide valid input (USD).');
         return;
       }
 
       // Gold capacity based on the USD amount
-      const gold_weight_possible_per_10g = (usd_amount_to_send / gold_rate_10g_usd).toFixed(2);
-      // Value in INR if that gold were bought in India
-      const purchased_gold_price_in_ind_inr = gold_weight_possible_per_10g * gold_rate_10g_ind_inr;
-      // Simply exchanging USD to INR
+      const gold_weight = (usd_amount_to_send / gold_rate_10g_usd).toFixed(2);
+      
+      // Value in INR if that gold were purchased in India
+      const purchased_gold_value_inr = gold_weight * gold_rate_10g_ind_inr;
+      
+      // If you simply exchanged USD to INR
       const exchanged_amount_in_inr = usd_amount_to_send * usd_to_inr;
 
       let output = '<table class="table table-striped">';
-      output += '<tr>';
-      output += '<td>Gold purchase capacity (units of 10g)</td>';
-      output += '<td>'+ gold_weight_possible_per_10g +'</td>';
-      output += '</tr>';
-
-      output += '<tr>';
-      output += '<td>Gold Purchased Value in India (INR)</td>';
-      output += '<td>'+ purchased_gold_price_in_ind_inr +'</td>';
-      output += '</tr>';
-
-      output += '<tr>';
-      output += '<td>USD Sent Amount Value (INR)</td>';
-      output += '<td>'+ exchanged_amount_in_inr +'</td>';
-      output += '</tr>';
-
-      output += '<tr>';
-      output += '<td>Difference</td>';
-      output += '<td>'+(purchased_gold_price_in_ind_inr - exchanged_amount_in_inr)+'</td>';
-      output += '</tr>';
+      output += '<tr><td>Gold purchase capacity (units of 10g)</td><td>'+ gold_weight +'</td></tr>';
+      output += '<tr><td>Gold Purchased Value in India (INR)</td><td>'+ purchased_gold_value_inr +'</td></tr>';
+      output += '<tr><td>USD Sent Amount Value (INR)</td><td>'+ exchanged_amount_in_inr +'</td></tr>';
+      output += '<tr><td>Difference</td><td>'+(purchased_gold_value_inr - exchanged_amount_in_inr)+'</td></tr>';
       output += '</table>';
 
       document.getElementById("output").innerHTML = output;
@@ -92,7 +78,6 @@
       document.getElementById('gold_rate_10g_ind_inr').value= '';
       document.getElementById("output").innerHTML = '';
     }
-
 
     /****************************************
      * 2) STOCK AVERAGE
@@ -113,7 +98,7 @@
         return;
       }
 
-      // Reimplementing the Python logic get_new_avg():
+      // Using the Python logic get_new_avg():
       // cost_value = cost_price * quantity_held
       // new_shares_value = market_price * new_shares
       // total_cost_value = cost_value + new_shares_value
@@ -126,7 +111,7 @@
       const total_shares     = quantity_held + new_shares;
       const new_avg          = (total_cost_value / total_shares).toFixed(2);
 
-      // Build a table with all inputs plus the new average
+      // Table with all inputs and the new average
       let resultTable = `
         <table class="table table-striped">
           <tr><td>Cost Price</td><td>${cost_price}</td></tr>
@@ -139,7 +124,6 @@
           </tr>
         </table>
       `;
-
       document.getElementById("avg_output").innerHTML = resultTable;
     }
 
@@ -151,55 +135,17 @@
       document.getElementById("avg_output").innerHTML = '';
     }
 
-    // On page load, show GTM by default
+    // Show GTM section by default on page load
     document.addEventListener('DOMContentLoaded', function(){
       showSection("gtmSection"); 
     });
   </script>
 
   <style>
-    /* 
-      ============= BASE ==============
-      We fix the menu on the left for larger screens.
-      We give it a width so the main content has margin to avoid overlap.
-      The main content has margin-left: 250px for the same reason.
-    */
-    #fixedMenu {
-      position: fixed;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 250px; 
-      overflow-y: auto; /* allows scrolling if needed */
-      background: #f8f9fa;
-    }
-
-    #mainContent {
-      margin-left: 250px; /* shift content so it's not behind the fixed menu */
-      padding: 1rem;
-    }
-
-    /* Some spacing for sections */
+    /* Optional: small spacing above each main section */
     #gtmSection,
     #stockAverageSection {
       margin-top: 1rem;
-    }
-
-    /*
-      ============= MEDIA QUERIES =============
-      On small/mobile screens, remove the fixed position so
-      the menu is no longer pinned. It will just appear on top
-      (stacked) and the content below it.
-    */
-    @media (max-width: 768px) {
-      #fixedMenu {
-        position: static; /* no longer pinned */
-        width: 100%;
-        height: auto; /* let it size naturally */
-      }
-      #mainContent {
-        margin-left: 0; /* remove margin so it fills the screen */
-      }
     }
   </style>
 </head>
@@ -207,9 +153,10 @@
 
 <div class="container-fluid">
   <div class="row">
-    <!-- LEFT-SIDE MENU (Pinned on larger screens, stacked on mobile) -->
-    <div id="fixedMenu">
-      <div class="card">
+    
+    <!-- LEFT COLUMN: MENU (col-12 on mobile, col-3 on larger screens) -->
+    <div class="col-12 col-md-3 col-lg-3">
+      <div class="card mt-3">
         <div class="card-header text-white bg-info">
           <i class="fas fa-bars"></i> Menu
         </div>
@@ -235,15 +182,15 @@
         </ul>
       </div>
     </div>
-    <!-- END LEFT-SIDE MENU -->
+    <!-- END MENU COLUMN -->
 
-    <!-- MAIN CONTENT (Right Side or below menu on mobile) -->
-    <div class="col-12" id="mainContent">
+    <!-- RIGHT COLUMN: MAIN CONTENT (col-12 on mobile, col-9 on larger screens) -->
+    <div class="col-12 col-md-9 col-lg-9">
       
-      <!-- 1) GTM Section (Uses USD now) -->
+      <!-- 1) GTM Section (Uses USD) -->
       <div id="gtmSection">
         <!-- GTM Card -->
-        <div class="card">
+        <div class="card mt-3">
           <div class="card-header">
             GTM (USD)
           </div>
@@ -301,7 +248,7 @@
       <!-- 2) Stock Average Section -->
       <div id="stockAverageSection" style="display: none;">
         <!-- Stock Average Card -->
-        <div class="card">
+        <div class="card mt-3">
           <div class="card-header">
             Stock Average
           </div>
@@ -356,7 +303,7 @@
       </div>
       <!-- End Stock Average Section -->
     </div>
-    <!-- End Main Content -->
+    <!-- End Main Content Column -->
   </div>
 </div>
 
