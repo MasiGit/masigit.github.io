@@ -1,131 +1,150 @@
-<link rel="stylesheet" href="lib/css/bootstrap4.6.1.min.css">
-<script src="lib/scripts/jquery.slim.min.js"></script>
-<script src="lib/scripts/bootstrap4.6.1.min.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GTM Single App</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="lib/css/bootstrap4.6.1.min.css">
+  <!-- jQuery -->
+  <script src="lib/scripts/jquery.slim.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="lib/scripts/bootstrap4.6.1.min.js"></script>
 
-<script>
+  <script>
+    function calcluate(){
+      var sar_amount_to_send = parseFloat(document.getElementById('sar_amount_to_send').value)
+      var sar_to_inr = parseFloat(document.getElementById('sar_to_inr').value)
+      var gold_rate_10g_ksa_sar = parseFloat(document.getElementById('gold_rate_10g_ksa_sar').value)
+      var gold_rate_10g_ind_inr = parseFloat(document.getElementById('gold_rate_10g_ind_inr').value)
 
-function calcluate(){
+      if (
+        isNaN(sar_amount_to_send) || 
+        isNaN(sar_to_inr) || 
+        isNaN(gold_rate_10g_ksa_sar) || 
+        isNaN(gold_rate_10g_ind_inr)
+      ){
+        alert('Please provide valid input');
+        return;
+      }
 
-    var sar_amount_to_send = parseFloat(document.getElementById('sar_amount_to_send').value)
-    var sar_to_inr = parseFloat(document.getElementById('sar_to_inr').value)
-    var gold_rate_10g_ksa_sar = parseFloat(document.getElementById('gold_rate_10g_ksa_sar').value)
-    var gold_rate_10g_ind_inr = parseFloat(document.getElementById('gold_rate_10g_ind_inr').value)
+      var gold_weight_possible_per_tola = (sar_amount_to_send / gold_rate_10g_ksa_sar).toFixed(2);
+      var purchased_gold_price_in_ind_inr = gold_weight_possible_per_tola * gold_rate_10g_ind_inr;
+      var exchanged_amount_sent = sar_amount_to_send * sar_to_inr;
 
-    if(isNaN(sar_amount_to_send) || isNaN(sar_amount_to_send) || isNaN(sar_amount_to_send) || isNaN(sar_amount_to_send)){
-        alert('Please provide valid input')
-        return
+      var output = '<table class="table table-striped">';
+      output += '<tr>';
+      output += '<td>Gold purchase capacity per 10g</td>';
+      output += '<td>'+ gold_weight_possible_per_tola +'</td>';
+      output += '</tr>';
+
+      output += '<tr>';
+      output += '<td>Gold Purchased Value In IND (INR)</td>';
+      output += '<td>'+ purchased_gold_price_in_ind_inr +'</td>';
+      output += '</tr>';
+
+      output += '<tr>';
+      output += '<td>SAR Sent Amount Value (INR)</td>';
+      output += '<td>'+ exchanged_amount_sent +'</td>';
+      output += '</tr>';
+
+      output += '<tr>';
+      output += '<td>Diff</td>';
+      output += '<td>'+(purchased_gold_price_in_ind_inr - exchanged_amount_sent)+'</td>';
+      output += '</tr>';
+      output += '</table>';
+
+      document.getElementById("output").innerHTML = output;
     }
 
-    var gold_weight_possible_per_tola = (sar_amount_to_send/gold_rate_10g_ksa_sar).toFixed(2)
-    var purchased_gold_price_ksa = gold_weight_possible_per_tola * gold_rate_10g_ksa_sar
-    var purchased_gold_price_in_ksa_to_inr = purchased_gold_price_ksa *  sar_to_inr
-    var exchanged_amount_sent = sar_amount_to_send * sar_to_inr
-    var purchased_gold_price_in_ind_inr = gold_weight_possible_per_tola * gold_rate_10g_ind_inr
+    function clearForm(){
+      document.getElementById('sar_amount_to_send').value = '';
+      document.getElementById('sar_to_inr').value = '';
+      document.getElementById('gold_rate_10g_ksa_sar').value = '';
+      document.getElementById('gold_rate_10g_ind_inr').value = '';
+      document.getElementById("output").innerHTML = '';
+    }
+  </script>
+</head>
+<body>
 
-    var output = '<table class="table table-striped">'
-    
-    output = output + '<tr>'
-    output = output + '<td>Gold purchase capacity per tola</td>'
-    output = output + '<td>'+gold_weight_possible_per_tola+'</td>'
-    output = output + '</tr>'
-    
-    output = output + '<tr>'
-    output = output + '<td>Gold Purchased Value In Ind (INR)</td>'
-    output = output + '<td>'+purchased_gold_price_in_ind_inr+'</td>'
-    output = output + '</tr>'
+<div class="container-fluid">
+  <div class="row">
 
-    output = output + '<tr>'
-    output = output + '<td>SAR Sent Amount Value (INR)</td>'
-    output = output + '<td>'+exchanged_amount_sent+'</td>'
-    output = output + '</tr>'
+    <!-- Main Content (GTM) -->
+    <div class="col-9" id="gtm">
+      
+      <!-- GTM Card -->
+      <div class="card mt-3">
+        <div class="card-header">
+          GTM
+        </div>
+        <div class="card-body">
 
-    output = output + '<tr>'
-    output = output + '<td>Diff</td>'
-    output = output + '<td>'+(purchased_gold_price_in_ind_inr-exchanged_amount_sent)+'</td>'
-    output = output + '</tr>'
-
-    output = output + '</table>'
-
-
-    //output = output+'Amount to send in SAR: '+(sar_amount_to_send)+' --- SAR_INR: '+(sar_to_inr)+' --- Gold Rate KSA: '+(gold_rate_10g_ksa_sar)+' --- Gold Rate IND: '+(gold_rate_10g_ind_inr)
-    // output = output+'Gold purchase capacity in tola: '+gold_weight_possible_per_tola
-    // output = output+'Gold Purchased Value In Ind for '+(gold_weight_possible_per_tola)+' tola '+ purchased_gold_price_in_ind_inr
-    // output = output+'SAR sent amount '+(sar_amount_to_send)+' value: '+ exchanged_amount_sent
-
-    // output = output+'Diff: '+(purchased_gold_price_in_ind_inr-exchanged_amount_sent)
-
-    document.getElementById("output").innerHTML = output
-
-}
-
-function clearForm(){
-    document.getElementById('sar_amount_to_send').value = ''
-    document.getElementById('sar_to_inr').value = ''
-    document.getElementById('gold_rate_10g_ksa_sar').value = ''
-    document.getElementById('gold_rate_10g_ind_inr').value = ''
-
-    document.getElementById("output").innerHTML = ''
-
-}
-
-</script>
-
-
-<div class="card">
-    <div class="card-header">
-        Gold To Currency
-    </div>
-    <div class="card-body">
-        <div class="row">
+          <div class="row">
             <div class="col-3">&nbsp;</div>
             <div class="col-6">
-                <div class="form-group row">
-                    <label for="usr">SAR-INR:</label>
-                    
-                        <input type="text" class="form-control" id="sar_to_inr">
-                   
-                </div>
-                <div class="form-group row">
-                    <label for="usr">Amount to Send (SAR):</label>
-                    
-                        <input type="text" class="form-control" id="sar_amount_to_send">
-                   
-                </div>
-                <div class="form-group row">
-                    <label for="pwd">Gold Rate 10g KSA (SAR):</label>
-                    
-                        <input type="text" class="form-control" id="gold_rate_10g_ksa_sar">
-                    
-                </div>
-                <div class="form-group row">
-                    <label for="pwd">Gold Rate 10g IND (INR):</label>
-                    
-                        <input type="text" class="form-control" id="gold_rate_10g_ind_inr">
-                   
-                </div>
+              
+              <div class="form-group row">
+                <label for="sar_to_inr">SAR-INR:</label>
+                <input type="text" class="form-control" id="sar_to_inr">
+              </div>
+              
+              <div class="form-group row">
+                <label for="sar_amount_to_send">Amount to Send (SAR):</label>
+                <input type="text" class="form-control" id="sar_amount_to_send">
+              </div>
+              
+              <div class="form-group row">
+                <label for="gold_rate_10g_ksa_sar">Gold Rate 10g KSA (SAR):</label>
+                <input type="text" class="form-control" id="gold_rate_10g_ksa_sar">
+              </div>
+              
+              <div class="form-group row">
+                <label for="gold_rate_10g_ind_inr">Gold Rate 10g IND (INR):</label>
+                <input type="text" class="form-control" id="gold_rate_10g_ind_inr">
+              </div>
+
             </div>
             <div class="col-3">&nbsp;</div>
+          </div>
+
         </div>
+        <div class="card-footer">
+          <button type="button" class="btn btn-primary" onclick="calcluate()">Submit</button>
+          <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear</button>
+        </div>
+      </div>
 
-    </div>
-    <div class="card-footer">
-        <button type="button" class="btn btn-primary" onclick="calcluate()">Submit</button>
-        <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear</button>
-    </div>
-</div>
-
-<div class="card">
-    <div class="card-header">Result</div>
-    <div class="card-body">
-
-        <div class="row">
-
+      <!-- Result Card -->
+      <div class="card mt-3">
+        <div class="card-header">Result</div>
+        <div class="card-body">
+          <div class="row">
             <div class="col-3">&nbsp;</div>
             <div class="col-6">
-                <div id="output"></div>
+              <div id="output"></div>
             </div>
             <div class="col-3">&nbsp;</div>
-
+          </div>
         </div>
+      </div>
+
     </div>
+    <!-- End of Main Content (GTM) -->
+
+
+    <!-- Right-Side Navigation -->
+    <div class="col-3 bg-light">
+      <nav class="nav flex-column mt-3">
+        <a class="nav-link active" href="#gtm">GTM</a>
+        <!-- Add more links here if needed -->
+        <!-- <a class="nav-link" href="#someOtherSection">Some Other Section</a> -->
+      </nav>
+    </div>
+    <!-- End of Right-Side Navigation -->
+
+  </div>
 </div>
+
+</body>
+</html>
