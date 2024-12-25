@@ -2,34 +2,47 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>GTM Single App</title>
+  <title>GTM & Stock Average App</title>
+  
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="lib/css/bootstrap4.6.1.min.css">
+  
+  <!-- (Optional) Font Awesome for Icons -->
+  <link 
+    rel="stylesheet" 
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" 
+    integrity="sha512-OkD1nCn6dZzJtC6OGx0Gv82ZASVal8QXYeJl5Q2OWq+BW+2FYD44s06Idq0gVaYM3Bh1qp0vMG2sT9lZdbi3Fw==" 
+    crossorigin="anonymous" referrerpolicy="no-referrer" 
+  />
+
   <!-- jQuery -->
   <script src="lib/scripts/jquery.slim.min.js"></script>
   <!-- Bootstrap JS -->
   <script src="lib/scripts/bootstrap4.6.1.min.js"></script>
 
   <script>
+    /********************************
+     * 1) GOLD TO CURRENCY (GTM)
+     ********************************/
     function calcluate(){
-      var sar_amount_to_send = parseFloat(document.getElementById('sar_amount_to_send').value)
-      var sar_to_inr = parseFloat(document.getElementById('sar_to_inr').value)
-      var gold_rate_10g_ksa_sar = parseFloat(document.getElementById('gold_rate_10g_ksa_sar').value)
-      var gold_rate_10g_ind_inr = parseFloat(document.getElementById('gold_rate_10g_ind_inr').value)
+      var sar_amount_to_send    = parseFloat(document.getElementById('sar_amount_to_send').value);
+      var sar_to_inr            = parseFloat(document.getElementById('sar_to_inr').value);
+      var gold_rate_10g_ksa_sar = parseFloat(document.getElementById('gold_rate_10g_ksa_sar').value);
+      var gold_rate_10g_ind_inr = parseFloat(document.getElementById('gold_rate_10g_ind_inr').value);
 
       if (
         isNaN(sar_amount_to_send) || 
-        isNaN(sar_to_inr) || 
+        isNaN(sar_to_inr) ||
         isNaN(gold_rate_10g_ksa_sar) || 
         isNaN(gold_rate_10g_ind_inr)
       ){
-        alert('Please provide valid input');
+        alert('Please provide valid input in GTM form.');
         return;
       }
 
-      var gold_weight_possible_per_tola = (sar_amount_to_send / gold_rate_10g_ksa_sar).toFixed(2);
+      var gold_weight_possible_per_tola   = (sar_amount_to_send / gold_rate_10g_ksa_sar).toFixed(2);
       var purchased_gold_price_in_ind_inr = gold_weight_possible_per_tola * gold_rate_10g_ind_inr;
-      var exchanged_amount_sent = sar_amount_to_send * sar_to_inr;
+      var exchanged_amount_sent           = sar_amount_to_send * sar_to_inr;
 
       var output = '<table class="table table-striped">';
       output += '<tr>';
@@ -56,12 +69,84 @@
       document.getElementById("output").innerHTML = output;
     }
 
-    function clearForm(){
-      document.getElementById('sar_amount_to_send').value = '';
-      document.getElementById('sar_to_inr').value = '';
+    function clearFormGTM(){
+      document.getElementById('sar_amount_to_send').value    = '';
+      document.getElementById('sar_to_inr').value            = '';
       document.getElementById('gold_rate_10g_ksa_sar').value = '';
       document.getElementById('gold_rate_10g_ind_inr').value = '';
       document.getElementById("output").innerHTML = '';
+    }
+
+
+    /********************************
+     * 2) STOCK AVERAGE
+     ********************************/
+    function calculateNewAverage(){
+      const cost_price    = parseFloat(document.getElementById('cost_price').value);
+      const quantity_held = parseFloat(document.getElementById('quantity_held').value);
+      const market_price  = parseFloat(document.getElementById('market_price').value);
+      const new_shares    = parseFloat(document.getElementById('new_shares').value);
+
+      if (
+        isNaN(cost_price) || 
+        isNaN(quantity_held) ||
+        isNaN(market_price) ||
+        isNaN(new_shares)
+      ) {
+        alert("Please provide valid input in Stock Average form.");
+        return;
+      }
+
+      // Reimplementing get_new_avg() from Python:
+      // def get_new_avg(cost_price,quantity_held,market_price, new_shares):
+      //     cost_value = cost_price * quantity_held
+      //     new_shares_value = market_price * new_shares
+      //     total_cost_value = cost_value + new_shares_value
+      //     total_shares = quantity_held + new_shares
+      //     new_avg = round((total_cost_value / total_shares), 2)
+      //     return new_avg
+
+      const cost_value       = cost_price * quantity_held;
+      const new_shares_value = market_price * new_shares;
+      const total_cost_value = cost_value + new_shares_value;
+      const total_shares     = quantity_held + new_shares;
+      const new_avg          = (total_cost_value / total_shares).toFixed(2);
+
+      // Build a table that shows the inputs plus the new average
+      let resultTable = `
+        <table class="table table-striped">
+          <tr>
+            <td>Cost Price</td>
+            <td>${cost_price}</td>
+          </tr>
+          <tr>
+            <td>Quantity Held</td>
+            <td>${quantity_held}</td>
+          </tr>
+          <tr>
+            <td>Market Price</td>
+            <td>${market_price}</td>
+          </tr>
+          <tr>
+            <td>New Shares</td>
+            <td>${new_shares}</td>
+          </tr>
+          <tr class="table-info">
+            <td>New Average Price</td>
+            <td><strong>${new_avg}</strong></td>
+          </tr>
+        </table>
+      `;
+
+      document.getElementById("avg_output").innerHTML = resultTable;
+    }
+
+    function clearFormStock(){
+      document.getElementById('cost_price').value     = '';
+      document.getElementById('quantity_held').value  = '';
+      document.getElementById('market_price').value   = '';
+      document.getElementById('new_shares').value     = '';
+      document.getElementById("avg_output").innerHTML = '';
     }
   </script>
 </head>
@@ -70,16 +155,15 @@
 <div class="container-fluid">
   <div class="row">
 
-    <!-- Main Content (GTM) -->
-    <div class="col-9" id="gtm">
-      
-      <!-- GTM Card -->
-      <div class="card mt-3">
+    <!-- Main Content (Left Column) -->
+    <div class="col-9">
+
+      <!-- GTM Section -->
+      <div id="gtm" class="card mt-3">
         <div class="card-header">
           GTM
         </div>
         <div class="card-body">
-
           <div class="row">
             <div class="col-3">&nbsp;</div>
             <div class="col-6">
@@ -107,15 +191,14 @@
             </div>
             <div class="col-3">&nbsp;</div>
           </div>
-
         </div>
         <div class="card-footer">
           <button type="button" class="btn btn-primary" onclick="calcluate()">Submit</button>
-          <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear</button>
+          <button type="button" class="btn btn-secondary" onclick="clearFormGTM()">Clear</button>
         </div>
       </div>
 
-      <!-- Result Card -->
+      <!-- GTM Result -->
       <div class="card mt-3">
         <div class="card-header">Result</div>
         <div class="card-body">
@@ -129,17 +212,85 @@
         </div>
       </div>
 
+      <!-- Stock Average Section -->
+      <div id="stock-average" class="card mt-5">
+        <div class="card-header">
+          Stock Average
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-3">&nbsp;</div>
+            <div class="col-6">
+              
+              <div class="form-group row">
+                <label for="cost_price">Cost Price:</label>
+                <input type="text" class="form-control" id="cost_price">
+              </div>
+              
+              <div class="form-group row">
+                <label for="quantity_held">Quantity Held:</label>
+                <input type="text" class="form-control" id="quantity_held">
+              </div>
+              
+              <div class="form-group row">
+                <label for="market_price">Market Price:</label>
+                <input type="text" class="form-control" id="market_price">
+              </div>
+              
+              <div class="form-group row">
+                <label for="new_shares">New Shares to Buy:</label>
+                <input type="text" class="form-control" id="new_shares">
+              </div>
+
+            </div>
+            <div class="col-3">&nbsp;</div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button type="button" class="btn btn-primary" onclick="calculateNewAverage()">Submit</button>
+          <button type="button" class="btn btn-secondary" onclick="clearFormStock()">Clear</button>
+        </div>
+      </div>
+
+      <!-- Stock Average Result -->
+      <div class="card mt-3">
+        <div class="card-header">Stock Average Result</div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-3">&nbsp;</div>
+            <div class="col-6">
+              <div id="avg_output"></div>
+            </div>
+            <div class="col-3">&nbsp;</div>
+          </div>
+        </div>
+      </div>
+
     </div>
-    <!-- End of Main Content (GTM) -->
+    <!-- End of Main Content (Left Column) -->
 
 
-    <!-- Right-Side Navigation -->
+    <!-- Right-Side Navigation (Menu) -->
     <div class="col-3 bg-light">
-      <nav class="nav flex-column mt-3">
-        <a class="nav-link active" href="#gtm">GTM</a>
-        <!-- Add more links here if needed -->
-        <!-- <a class="nav-link" href="#someOtherSection">Some Other Section</a> -->
-      </nav>
+      <div class="card mt-3">
+        <div class="card-header text-white bg-info">
+          <i class="fas fa-bars"></i> Menu
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <!-- GTM Link -->
+            <a class="text-decoration-none" href="#gtm">
+              <i class="fas fa-coins"></i> GTM
+            </a>
+          </li>
+          <li class="list-group-item">
+            <!-- Stock Average Link -->
+            <a class="text-decoration-none" href="#stock-average">
+              <i class="fas fa-chart-line"></i> Stock Average
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
     <!-- End of Right-Side Navigation -->
 
