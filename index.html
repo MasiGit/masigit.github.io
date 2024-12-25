@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>GTM & Stock Average App</title>
+  <title>GTM & Stock Average App (Using USD)</title>
   
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="lib/css/bootstrap4.6.1.min.css">
@@ -12,7 +12,8 @@
     rel="stylesheet" 
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" 
     integrity="sha512-OkD1nCn6dZzJtC6OGx0Gv82ZASVal8QXYeJl5Q2OWq+BW+2FYD44s06Idq0gVaYM3Bh1qp0vMG2sT9lZdbi3Fw==" 
-    crossorigin="anonymous" referrerpolicy="no-referrer" 
+    crossorigin="anonymous" 
+    referrerpolicy="no-referrer" 
   />
 
   <!-- jQuery -->
@@ -21,7 +22,9 @@
   <script src="lib/scripts/bootstrap4.6.1.min.js"></script>
 
   <script>
-    // Hide both sections by default, then show the requested one
+    /****************************************
+     * Show & Hide Sections
+     ****************************************/
     function showSection(sectionID) {
       // Hide both
       document.getElementById("gtmSection").style.display = "none";
@@ -31,48 +34,53 @@
       document.getElementById(sectionID).style.display = "block";
     }
 
-    /********************************
-     * 1) GOLD TO CURRENCY (GTM)
-     ********************************/
+    /****************************************
+     * 1) GOLD TO CURRENCY (GTM) - Using USD
+     ****************************************/
     function calcluate(){
-      var sar_amount_to_send    = parseFloat(document.getElementById('sar_amount_to_send').value);
-      var sar_to_inr            = parseFloat(document.getElementById('sar_to_inr').value);
-      var gold_rate_10g_ksa_sar = parseFloat(document.getElementById('gold_rate_10g_ksa_sar').value);
-      var gold_rate_10g_ind_inr = parseFloat(document.getElementById('gold_rate_10g_ind_inr').value);
+      const usd_amount_to_send = parseFloat(document.getElementById('usd_amount_to_send').value);
+      const usd_to_inr         = parseFloat(document.getElementById('usd_to_inr').value);
+      const gold_rate_10g_usd  = parseFloat(document.getElementById('gold_rate_10g_usd').value);
+      const gold_rate_10g_ind_inr = parseFloat(document.getElementById('gold_rate_10g_ind_inr').value);
 
       if (
-        isNaN(sar_amount_to_send) || 
-        isNaN(sar_to_inr) ||
-        isNaN(gold_rate_10g_ksa_sar) || 
+        isNaN(usd_amount_to_send) || 
+        isNaN(usd_to_inr) ||
+        isNaN(gold_rate_10g_usd) || 
         isNaN(gold_rate_10g_ind_inr)
       ){
-        alert('Please provide valid input in GTM form.');
+        alert('Please provide valid input in GTM form (USD).');
         return;
       }
 
-      var gold_weight_possible_per_tola   = (sar_amount_to_send / gold_rate_10g_ksa_sar).toFixed(2);
-      var purchased_gold_price_in_ind_inr = gold_weight_possible_per_tola * gold_rate_10g_ind_inr;
-      var exchanged_amount_sent           = sar_amount_to_send * sar_to_inr;
+      // How much gold can be purchased with the USD amount?
+      const gold_weight_possible_per_10g = (usd_amount_to_send / gold_rate_10g_usd).toFixed(2);
+      
+      // Value of that gold if purchased in India (INR)
+      const purchased_gold_price_in_ind_inr = gold_weight_possible_per_10g * gold_rate_10g_ind_inr;
+      
+      // If you simply exchanged your USD to INR
+      const exchanged_amount_in_inr = usd_amount_to_send * usd_to_inr;
 
-      var output = '<table class="table table-striped">';
+      let output = '<table class="table table-striped">';
       output += '<tr>';
-      output += '<td>Gold purchase capacity per 10g</td>';
-      output += '<td>'+ gold_weight_possible_per_tola +'</td>';
+      output += '<td>Gold purchase capacity (units of 10g)</td>';
+      output += '<td>'+ gold_weight_possible_per_10g +'</td>';
       output += '</tr>';
 
       output += '<tr>';
-      output += '<td>Gold Purchased Value In IND (INR)</td>';
+      output += '<td>Gold Purchased Value in India (INR)</td>';
       output += '<td>'+ purchased_gold_price_in_ind_inr +'</td>';
       output += '</tr>';
 
       output += '<tr>';
-      output += '<td>SAR Sent Amount Value (INR)</td>';
-      output += '<td>'+ exchanged_amount_sent +'</td>';
+      output += '<td>USD Sent Amount Value (INR)</td>';
+      output += '<td>'+ exchanged_amount_in_inr +'</td>';
       output += '</tr>';
 
       output += '<tr>';
-      output += '<td>Diff</td>';
-      output += '<td>'+(purchased_gold_price_in_ind_inr - exchanged_amount_sent)+'</td>';
+      output += '<td>Difference</td>';
+      output += '<td>'+(purchased_gold_price_in_ind_inr - exchanged_amount_in_inr)+'</td>';
       output += '</tr>';
       output += '</table>';
 
@@ -80,17 +88,17 @@
     }
 
     function clearFormGTM(){
-      document.getElementById('sar_amount_to_send').value    = '';
-      document.getElementById('sar_to_inr').value            = '';
-      document.getElementById('gold_rate_10g_ksa_sar').value = '';
-      document.getElementById('gold_rate_10g_ind_inr').value = '';
+      document.getElementById('usd_amount_to_send').value   = '';
+      document.getElementById('usd_to_inr').value           = '';
+      document.getElementById('gold_rate_10g_usd').value    = '';
+      document.getElementById('gold_rate_10g_ind_inr').value= '';
       document.getElementById("output").innerHTML = '';
     }
 
 
-    /********************************
+    /****************************************
      * 2) STOCK AVERAGE
-     ********************************/
+     ****************************************/
     function calculateNewAverage(){
       const cost_price    = parseFloat(document.getElementById('cost_price').value);
       const quantity_held = parseFloat(document.getElementById('quantity_held').value);
@@ -107,14 +115,12 @@
         return;
       }
 
-      // Reimplementing get_new_avg() from Python:
-      // def get_new_avg(cost_price,quantity_held,market_price, new_shares):
-      //     cost_value = cost_price * quantity_held
-      //     new_shares_value = market_price * new_shares
-      //     total_cost_value = cost_value + new_shares_value
-      //     total_shares = quantity_held + new_shares
-      //     new_avg = round((total_cost_value / total_shares), 2)
-      //     return new_avg
+      // Reimplementing the Python logic get_new_avg():
+      // cost_value = cost_price * quantity_held
+      // new_shares_value = market_price * new_shares
+      // total_cost_value = cost_value + new_shares_value
+      // total_shares = quantity_held + new_shares
+      // new_avg = round(total_cost_value / total_shares, 2)
 
       const cost_value       = cost_price * quantity_held;
       const new_shares_value = market_price * new_shares;
@@ -122,29 +128,14 @@
       const total_shares     = quantity_held + new_shares;
       const new_avg          = (total_cost_value / total_shares).toFixed(2);
 
-      // Build a table that shows the inputs plus the new average
+      // Build a table with all inputs plus the new average
       let resultTable = `
         <table class="table table-striped">
-          <tr>
-            <td>Cost Price</td>
-            <td>${cost_price}</td>
-          </tr>
-          <tr>
-            <td>Quantity Held</td>
-            <td>${quantity_held}</td>
-          </tr>
-          <tr>
-            <td>Market Price</td>
-            <td>${market_price}</td>
-          </tr>
-          <tr>
-            <td>New Shares</td>
-            <td>${new_shares}</td>
-          </tr>
-          <tr class="table-info">
-            <td>New Average Price</td>
-            <td><strong>${new_avg}</strong></td>
-          </tr>
+          <tr><td>Cost Price</td><td>${cost_price}</td></tr>
+          <tr><td>Quantity Held</td><td>${quantity_held}</td></tr>
+          <tr><td>Market Price</td><td>${market_price}</td></tr>
+          <tr><td>New Shares</td><td>${new_shares}</td></tr>
+          <tr class="table-info"><td>New Average Price</td><td><strong>${new_avg}</strong></td></tr>
         </table>
       `;
 
@@ -166,7 +157,25 @@
   </script>
 
   <style>
-    /* Just an optional bit of styling to emphasize hidden vs shown sections */
+    /* 
+      1) We fix the menu on the left side.
+      2) We give it a set width so the main content can have a margin to avoid overlap.
+      3) The main content has margin-left: 250px for the same reason.
+    */
+    #fixedMenu {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 250px; 
+      overflow-y: auto; /* allows scrolling if needed */
+    }
+
+    #mainContent {
+      margin-left: 250px; /* shift content so it's not hidden by the fixed menu */
+    }
+
+    /* Some spacing for sections */
     #gtmSection, #stockAverageSection {
       margin-top: 1rem;
     }
@@ -177,15 +186,45 @@
 <div class="container-fluid">
   <div class="row">
 
-    <!-- Main Content (Left Column) -->
-    <div class="col-9">
+    <!-- LEFT-SIDE FIXED MENU -->
+    <div id="fixedMenu" class="bg-light">
+      <div class="card">
+        <div class="card-header text-white bg-info">
+          <i class="fas fa-bars"></i> Menu
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <a 
+              href="javascript:void(0)" 
+              class="text-decoration-none" 
+              onclick="showSection('gtmSection')"
+            >
+              <i class="fas fa-coins"></i> GTM
+            </a>
+          </li>
+          <li class="list-group-item">
+            <a 
+              href="javascript:void(0)" 
+              class="text-decoration-none" 
+              onclick="showSection('stockAverageSection')"
+            >
+              <i class="fas fa-chart-line"></i> Stock Average
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!-- END LEFT-SIDE FIXED MENU -->
 
-      <!-- 1) GTM Section -->
-      <div id="gtmSection"> 
+    <!-- MAIN CONTENT (Right Side) -->
+    <div class="col-12" id="mainContent">
+      
+      <!-- 1) GTM Section (Uses USD now) -->
+      <div id="gtmSection">
         <!-- GTM Card -->
         <div class="card">
           <div class="card-header">
-            GTM
+            GTM (USD)
           </div>
           <div class="card-body">
             <div class="row">
@@ -193,22 +232,22 @@
               <div class="col-6">
                 
                 <div class="form-group row">
-                  <label for="sar_to_inr">SAR-INR:</label>
-                  <input type="text" class="form-control" id="sar_to_inr">
+                  <label for="usd_to_inr">USD-INR:</label>
+                  <input type="text" class="form-control" id="usd_to_inr">
                 </div>
                 
                 <div class="form-group row">
-                  <label for="sar_amount_to_send">Amount to Send (SAR):</label>
-                  <input type="text" class="form-control" id="sar_amount_to_send">
+                  <label for="usd_amount_to_send">Amount to Send (USD):</label>
+                  <input type="text" class="form-control" id="usd_amount_to_send">
                 </div>
                 
                 <div class="form-group row">
-                  <label for="gold_rate_10g_ksa_sar">Gold Rate 10g KSA (SAR):</label>
-                  <input type="text" class="form-control" id="gold_rate_10g_ksa_sar">
+                  <label for="gold_rate_10g_usd">Gold Rate 10g (USD):</label>
+                  <input type="text" class="form-control" id="gold_rate_10g_usd">
                 </div>
                 
                 <div class="form-group row">
-                  <label for="gold_rate_10g_ind_inr">Gold Rate 10g IND (INR):</label>
+                  <label for="gold_rate_10g_ind_inr">Gold Rate 10g (INR):</label>
                   <input type="text" class="form-control" id="gold_rate_10g_ind_inr">
                 </div>
 
@@ -238,9 +277,8 @@
       </div>
       <!-- End GTM Section -->
 
-
       <!-- 2) Stock Average Section -->
-      <div id="stockAverageSection" style="display: none;"> 
+      <div id="stockAverageSection" style="display: none;">
         <!-- Stock Average Card -->
         <div class="card">
           <div class="card-header">
@@ -296,41 +334,8 @@
         </div>
       </div>
       <!-- End Stock Average Section -->
-
     </div>
-    <!-- End of Main Content (Left Column) -->
-
-
-    <!-- Right-Side Navigation (Menu) -->
-    <div class="col-3 bg-light">
-      <div class="card mt-3">
-        <div class="card-header text-white bg-info">
-          <i class="fas fa-bars"></i> Menu
-        </div>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item">
-            <a 
-              href="javascript:void(0)" 
-              class="text-decoration-none" 
-              onclick="showSection('gtmSection')"
-            >
-              <i class="fas fa-coins"></i> GTM
-            </a>
-          </li>
-          <li class="list-group-item">
-            <a 
-              href="javascript:void(0)" 
-              class="text-decoration-none" 
-              onclick="showSection('stockAverageSection')"
-            >
-              <i class="fas fa-chart-line"></i> Stock Average
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <!-- End of Right-Side Navigation -->
-
+    <!-- End Main Content -->
   </div>
 </div>
 
