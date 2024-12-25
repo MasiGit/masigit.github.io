@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>GTM & Stock Average App (Using USD)</title>
+  <title>GTM & Stock Average App (USD + Responsive)</title>
   
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="lib/css/bootstrap4.6.1.min.css">
@@ -38,10 +38,10 @@
      * 1) GOLD TO CURRENCY (GTM) - Using USD
      ****************************************/
     function calcluate(){
-      const usd_amount_to_send = parseFloat(document.getElementById('usd_amount_to_send').value);
-      const usd_to_inr         = parseFloat(document.getElementById('usd_to_inr').value);
-      const gold_rate_10g_usd  = parseFloat(document.getElementById('gold_rate_10g_usd').value);
-      const gold_rate_10g_ind_inr = parseFloat(document.getElementById('gold_rate_10g_ind_inr').value);
+      const usd_amount_to_send   = parseFloat(document.getElementById('usd_amount_to_send').value);
+      const usd_to_inr           = parseFloat(document.getElementById('usd_to_inr').value);
+      const gold_rate_10g_usd    = parseFloat(document.getElementById('gold_rate_10g_usd').value);
+      const gold_rate_10g_ind_inr= parseFloat(document.getElementById('gold_rate_10g_ind_inr').value);
 
       if (
         isNaN(usd_amount_to_send) || 
@@ -53,13 +53,11 @@
         return;
       }
 
-      // How much gold can be purchased with the USD amount?
+      // Gold capacity based on the USD amount
       const gold_weight_possible_per_10g = (usd_amount_to_send / gold_rate_10g_usd).toFixed(2);
-      
-      // Value of that gold if purchased in India (INR)
+      // Value in INR if that gold were bought in India
       const purchased_gold_price_in_ind_inr = gold_weight_possible_per_10g * gold_rate_10g_ind_inr;
-      
-      // If you simply exchanged your USD to INR
+      // Simply exchanging USD to INR
       const exchanged_amount_in_inr = usd_amount_to_send * usd_to_inr;
 
       let output = '<table class="table table-striped">';
@@ -120,7 +118,7 @@
       // new_shares_value = market_price * new_shares
       // total_cost_value = cost_value + new_shares_value
       // total_shares = quantity_held + new_shares
-      // new_avg = round(total_cost_value / total_shares, 2)
+      // new_avg = (total_cost_value / total_shares).toFixed(2)
 
       const cost_value       = cost_price * quantity_held;
       const new_shares_value = market_price * new_shares;
@@ -135,7 +133,10 @@
           <tr><td>Quantity Held</td><td>${quantity_held}</td></tr>
           <tr><td>Market Price</td><td>${market_price}</td></tr>
           <tr><td>New Shares</td><td>${new_shares}</td></tr>
-          <tr class="table-info"><td>New Average Price</td><td><strong>${new_avg}</strong></td></tr>
+          <tr class="table-info">
+            <td>New Average Price</td>
+            <td><strong>${new_avg}</strong></td>
+          </tr>
         </table>
       `;
 
@@ -158,9 +159,10 @@
 
   <style>
     /* 
-      1) We fix the menu on the left side.
-      2) We give it a set width so the main content can have a margin to avoid overlap.
-      3) The main content has margin-left: 250px for the same reason.
+      ============= BASE ==============
+      We fix the menu on the left for larger screens.
+      We give it a width so the main content has margin to avoid overlap.
+      The main content has margin-left: 250px for the same reason.
     */
     #fixedMenu {
       position: fixed;
@@ -169,15 +171,35 @@
       bottom: 0;
       width: 250px; 
       overflow-y: auto; /* allows scrolling if needed */
+      background: #f8f9fa;
     }
 
     #mainContent {
-      margin-left: 250px; /* shift content so it's not hidden by the fixed menu */
+      margin-left: 250px; /* shift content so it's not behind the fixed menu */
+      padding: 1rem;
     }
 
     /* Some spacing for sections */
-    #gtmSection, #stockAverageSection {
+    #gtmSection,
+    #stockAverageSection {
       margin-top: 1rem;
+    }
+
+    /*
+      ============= MEDIA QUERIES =============
+      On small/mobile screens, remove the fixed position so
+      the menu is no longer pinned. It will just appear on top
+      (stacked) and the content below it.
+    */
+    @media (max-width: 768px) {
+      #fixedMenu {
+        position: static; /* no longer pinned */
+        width: 100%;
+        height: auto; /* let it size naturally */
+      }
+      #mainContent {
+        margin-left: 0; /* remove margin so it fills the screen */
+      }
     }
   </style>
 </head>
@@ -185,9 +207,8 @@
 
 <div class="container-fluid">
   <div class="row">
-
-    <!-- LEFT-SIDE FIXED MENU -->
-    <div id="fixedMenu" class="bg-light">
+    <!-- LEFT-SIDE MENU (Pinned on larger screens, stacked on mobile) -->
+    <div id="fixedMenu">
       <div class="card">
         <div class="card-header text-white bg-info">
           <i class="fas fa-bars"></i> Menu
@@ -195,8 +216,8 @@
         <ul class="list-group list-group-flush">
           <li class="list-group-item">
             <a 
-              href="javascript:void(0)" 
-              class="text-decoration-none" 
+              href="javascript:void(0)"
+              class="text-decoration-none"
               onclick="showSection('gtmSection')"
             >
               <i class="fas fa-coins"></i> GTM
@@ -204,8 +225,8 @@
           </li>
           <li class="list-group-item">
             <a 
-              href="javascript:void(0)" 
-              class="text-decoration-none" 
+              href="javascript:void(0)"
+              class="text-decoration-none"
               onclick="showSection('stockAverageSection')"
             >
               <i class="fas fa-chart-line"></i> Stock Average
@@ -214,9 +235,9 @@
         </ul>
       </div>
     </div>
-    <!-- END LEFT-SIDE FIXED MENU -->
+    <!-- END LEFT-SIDE MENU -->
 
-    <!-- MAIN CONTENT (Right Side) -->
+    <!-- MAIN CONTENT (Right Side or below menu on mobile) -->
     <div class="col-12" id="mainContent">
       
       <!-- 1) GTM Section (Uses USD now) -->
