@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>GTM & Stock Average App (USD) with Additional StockAverageSection2</title>
+  <title>GTM & Stock Average App (USD) with StockAverageSection2 Highlight</title>
 
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="lib/css/bootstrap4.6.1.min.css">
   
   <!-- (Optional) Font Awesome for Icons -->
   <link 
-    rel="stylesheet" 
+    rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     integrity="sha512-OkD1nCn6dZzJtC6OGx0Gv82ZASVal8QXYeJl5Q2OWq+BW+2FYD44s06Idq0GvTY0gVaYM3Bh1qp0vMG2sT9lZdbi3Fw=="
     crossorigin="anonymous"
@@ -146,10 +146,7 @@
      *      new_shares2
      *      new_average_price2
      *    Fill exactly 4, the 5th is computed.
-     *    
-     *    NEW REQUIREMENT:
-     *    "always New Shares value, it should not contain any decimal."
-     *    => We'll do Math.round(...) on new_shares2.
+     *    We'll highlight the row that was computed.
      ****************************************/
     function calculateNewAverage2(){
       // Get the values (or NaN if empty)
@@ -169,22 +166,26 @@
         return;
       }
 
-      // The standard formula used:
-      // total_cost_value = (cost_price * quantity_held) + (market_price * new_shares)
-      // total_shares = quantity_held + new_shares
-      // new_avg = total_cost_value / total_shares
+      // We'll keep track of which variable is missing so we can highlight it
+      let missingVar = null; 
 
-      // Identify which one is blank (NaN) and solve for it.
+      /*
+        The standard formula:
+          total_cost_value = (cost_price * quantity_held) + (market_price * new_shares)
+          total_shares = quantity_held + new_shares
+          new_avg = total_cost_value / total_shares
+      */
 
-      // If new_avg_price is missing, compute it.
+      // If new_avg_price is missing
       if (isNaN(new_avg_price)) {
+        missingVar = "new_avg_price";
         let total_cost_value = (cost_price * quantity_held) + (market_price * new_shares);
         let total_shares = quantity_held + new_shares;
         new_avg_price = (total_cost_value / total_shares).toFixed(2);
       }
       // If cost_price is missing
       else if (isNaN(cost_price)) {
-        // cost_price = [ new_avg_price*(quantity_held + new_shares) - (market_price*new_shares) ] / quantity_held
+        missingVar = "cost_price";
         cost_price = (
           new_avg_price * (quantity_held + new_shares) - 
           (market_price * new_shares)
@@ -193,7 +194,7 @@
       }
       // If quantity_held is missing
       else if (isNaN(quantity_held)) {
-        // quantity_held = [ new_shares*(market_price - new_avg_price) ] / (new_avg_price - cost_price)
+        missingVar = "quantity_held";
         quantity_held = (
           new_shares * (market_price - new_avg_price)
         ) / (new_avg_price - cost_price);
@@ -201,7 +202,7 @@
       }
       // If market_price is missing
       else if (isNaN(market_price)) {
-        // market_price = [ new_avg_price*(quantity_held + new_shares) - cost_price*quantity_held ] / new_shares
+        missingVar = "market_price";
         market_price = (
           new_avg_price*(quantity_held + new_shares) -
           (cost_price*quantity_held)
@@ -210,7 +211,7 @@
       }
       // If new_shares is missing
       else if (isNaN(new_shares)) {
-        // new_shares = [ quantity_held*(cost_price - new_avg_price) ] / (new_avg_price - market_price)
+        missingVar = "new_shares";
         new_shares = (
           quantity_held*(cost_price - new_avg_price)
         ) / (new_avg_price - market_price);
@@ -219,21 +220,38 @@
         new_shares = Math.round(new_shares);
       }
 
-      // If new_shares was provided by the user or solved above,
-      // we *still* want to ensure it has no decimals.
-      // So if it's valid (not NaN), round it.
+      // If new_shares was provided or just calculated, ensure no decimals
       if (!isNaN(new_shares)) {
         new_shares = Math.round(new_shares);
       }
 
+      // Build dynamic classes for highlighting the missing variable
+      const rowClass_costPrice    = missingVar === "cost_price"       ? "table-info" : "";
+      const rowClass_quantityHeld = missingVar === "quantity_held"    ? "table-info" : "";
+      const rowClass_marketPrice  = missingVar === "market_price"     ? "table-info" : "";
+      const rowClass_newShares    = missingVar === "new_shares"       ? "table-info" : "";
+      const rowClass_newAvg       = missingVar === "new_avg_price"    ? "table-info" : "";
+
       // Final output
       let output2 = `
         <table class="table table-striped">
-          <tr><td>Cost Price</td><td>${cost_price || 0}</td></tr>
-          <tr><td>Quantity Held</td><td>${quantity_held || 0}</td></tr>
-          <tr><td>Market Price</td><td>${market_price || 0}</td></tr>
-          <tr><td>New Shares</td><td>${new_shares || 0}</td></tr>
-          <tr class="table-info">
+          <tr class="${rowClass_costPrice}">
+            <td>Cost Price</td>
+            <td>${cost_price || 0}</td>
+          </tr>
+          <tr class="${rowClass_quantityHeld}">
+            <td>Quantity Held</td>
+            <td>${quantity_held || 0}</td>
+          </tr>
+          <tr class="${rowClass_marketPrice}">
+            <td>Market Price</td>
+            <td>${market_price || 0}</td>
+          </tr>
+          <tr class="${rowClass_newShares}">
+            <td>New Shares</td>
+            <td>${new_shares || 0}</td>
+          </tr>
+          <tr class="${rowClass_newAvg}">
             <td>New Average Price</td>
             <td><strong>${parseFloat(new_avg_price) || 0}</strong></td>
           </tr>
@@ -428,7 +446,8 @@
           <div class="card-body">
             <p class="text-muted">
               Fill exactly <strong>4</strong> of the fields below; leave the 5th <strong>blank</strong>. 
-              Then click "Calculate" and we'll solve for the missing field.
+              Then click "Calculate" and we'll solve for the missing field, 
+              <em>highlighting</em> the computed row.
             </p>
             <div class="row">
               <div class="col-3">&nbsp;</div>
@@ -469,7 +488,7 @@
           </div>
         </div>
 
-        <!-- Stock Average 2 Result Card -->
+        <!-- Stock Average 2 Result -->
         <div class="card mt-3">
           <div class="card-header">Stock Average 2 Result</div>
           <div class="card-body">
