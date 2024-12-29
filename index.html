@@ -146,6 +146,10 @@
      *      new_shares2
      *      new_average_price2
      *    Fill exactly 4, the 5th is computed.
+     *    
+     *    NEW REQUIREMENT:
+     *    "always New Shares value, it should not contain any decimal."
+     *    => We'll do Math.round(...) on new_shares2.
      ****************************************/
     function calculateNewAverage2(){
       // Get the values (or NaN if empty)
@@ -155,31 +159,22 @@
       let new_shares      = parseFloat(document.getElementById('new_shares2').value);
       let new_avg_price   = parseFloat(document.getElementById('new_average_price2').value);
 
-      // Count how many are valid numbers
-      let values = [
-        cost_price, 
-        quantity_held, 
-        market_price, 
-        new_shares, 
-        new_avg_price
-      ];
-
-      // This array is parallel to the above variables
-      // We'll count how many are "valid" (not NaN).
+      // We'll store these in an array to check how many are valid.
+      let values = [cost_price, quantity_held, market_price, new_shares, new_avg_price];
       let validCount = values.reduce((acc, val) => acc + (isNaN(val) ? 0 : 1), 0);
 
-      // We need EXACTLY 4 valid inputs (1 blank) to solve for the 5th.
+      // We need EXACTLY 4 valid inputs, 1 blank
       if (validCount !== 4) {
         alert("Please fill exactly 4 fields, leaving the 5th empty.");
         return;
       }
 
-      // The standard formula (like in original):
+      // The standard formula used:
       // total_cost_value = (cost_price * quantity_held) + (market_price * new_shares)
       // total_shares = quantity_held + new_shares
       // new_avg = total_cost_value / total_shares
 
-      // We'll find which one is NaN, then solve for it.
+      // Identify which one is blank (NaN) and solve for it.
 
       // If new_avg_price is missing, compute it.
       if (isNaN(new_avg_price)) {
@@ -187,10 +182,8 @@
         let total_shares = quantity_held + new_shares;
         new_avg_price = (total_cost_value / total_shares).toFixed(2);
       }
-      // If cost_price is missing, solve:
+      // If cost_price is missing
       else if (isNaN(cost_price)) {
-        // new_avg_price * (quantity_held + new_shares) = (cost_price * quantity_held) + (market_price * new_shares)
-        // cost_price * quantity_held = new_avg_price*(quantity_held + new_shares) - (market_price*new_shares)
         // cost_price = [ new_avg_price*(quantity_held + new_shares) - (market_price*new_shares) ] / quantity_held
         cost_price = (
           new_avg_price * (quantity_held + new_shares) - 
@@ -198,52 +191,51 @@
         ) / quantity_held;
         cost_price = parseFloat(cost_price.toFixed(2));
       }
-      // If quantity_held is missing, solve:
+      // If quantity_held is missing
       else if (isNaN(quantity_held)) {
-        // new_avg_price = [ (cost_price * quantity_held) + (market_price * new_shares ) ] / [ quantity_held + new_shares ]
-        // => new_avg_price*(quantity_held + new_shares) = cost_price*quantity_held + market_price*new_shares
-        // => new_avg_price*quantity_held + new_avg_price*new_shares = cost_price*quantity_held + market_price*new_shares
-        // => quantity_held*(new_avg_price - cost_price) = new_shares*(market_price - new_avg_price)
-        // => quantity_held = [ new_shares*(market_price - new_avg_price) ] / (new_avg_price - cost_price)
+        // quantity_held = [ new_shares*(market_price - new_avg_price) ] / (new_avg_price - cost_price)
         quantity_held = (
           new_shares * (market_price - new_avg_price)
         ) / (new_avg_price - cost_price);
         quantity_held = parseFloat(quantity_held.toFixed(2));
       }
-      // If market_price is missing, solve:
+      // If market_price is missing
       else if (isNaN(market_price)) {
-        // new_avg_price*(quantity_held + new_shares) = cost_price*quantity_held + (market_price * new_shares)
-        // => market_price * new_shares = new_avg_price*(quantity_held + new_shares) - cost_price*quantity_held
-        // => market_price = [ new_avg_price*(quantity_held + new_shares) - cost_price*quantity_held ] / new_shares
+        // market_price = [ new_avg_price*(quantity_held + new_shares) - cost_price*quantity_held ] / new_shares
         market_price = (
-          new_avg_price*(quantity_held + new_shares) - 
+          new_avg_price*(quantity_held + new_shares) -
           (cost_price*quantity_held)
         ) / new_shares;
         market_price = parseFloat(market_price.toFixed(2));
       }
-      // If new_shares is missing, solve:
+      // If new_shares is missing
       else if (isNaN(new_shares)) {
-        // new_avg_price*(quantity_held + new_shares) = cost_price*quantity_held + (market_price*new_shares)
-        // => new_avg_price*quantity_held + new_avg_price*new_shares = cost_price*quantity_held + market_price*new_shares
-        // => new_avg_price*new_shares - market_price*new_shares = cost_price*quantity_held - new_avg_price*quantity_held
-        // => new_shares*(new_avg_price - market_price) = quantity_held*(cost_price - new_avg_price)
-        // => new_shares = [ quantity_held*(cost_price - new_avg_price) ] / (new_avg_price - market_price)
+        // new_shares = [ quantity_held*(cost_price - new_avg_price) ] / (new_avg_price - market_price)
         new_shares = (
           quantity_held*(cost_price - new_avg_price)
         ) / (new_avg_price - market_price);
-        new_shares = parseFloat(new_shares.toFixed(2));
+
+        // Round new_shares to ensure no decimal
+        new_shares = Math.round(new_shares);
       }
 
-      // Now we have all 5 values. Let's build an output table:
+      // If new_shares was provided by the user or solved above,
+      // we *still* want to ensure it has no decimals.
+      // So if it's valid (not NaN), round it.
+      if (!isNaN(new_shares)) {
+        new_shares = Math.round(new_shares);
+      }
+
+      // Final output
       let output2 = `
         <table class="table table-striped">
-          <tr><td>Cost Price</td><td>${cost_price}</td></tr>
-          <tr><td>Quantity Held</td><td>${quantity_held}</td></tr>
-          <tr><td>Market Price</td><td>${market_price}</td></tr>
-          <tr><td>New Shares</td><td>${new_shares}</td></tr>
+          <tr><td>Cost Price</td><td>${cost_price || 0}</td></tr>
+          <tr><td>Quantity Held</td><td>${quantity_held || 0}</td></tr>
+          <tr><td>Market Price</td><td>${market_price || 0}</td></tr>
+          <tr><td>New Shares</td><td>${new_shares || 0}</td></tr>
           <tr class="table-info">
             <td>New Average Price</td>
-            <td><strong>${parseFloat(new_avg_price)}</strong></td>
+            <td><strong>${parseFloat(new_avg_price) || 0}</strong></td>
           </tr>
         </table>
       `;
