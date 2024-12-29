@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>GTM & Stock Average App</title>
+  <title>GTM & Stock Average App (USD) with Additional StockAverageSection2</title>
 
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="lib/css/bootstrap4.6.1.min.css">
@@ -10,10 +10,10 @@
   <!-- (Optional) Font Awesome for Icons -->
   <link 
     rel="stylesheet" 
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" 
-    integrity="sha512-OkD1nCn6dZzJtC6OGx0Gv82ZASVal8QXYeJl5Q2OWq+BW+2FYD44s06Idq0GvTY0gVaYM3Bh1qp0vMG2sT9lZdbi3Fw==" 
-    crossorigin="anonymous" 
-    referrerpolicy="no-referrer" 
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    integrity="sha512-OkD1nCn6dZzJtC6OGx0Gv82ZASVal8QXYeJl5Q2OWq+BW+2FYD44s06Idq0GvTY0gVaYM3Bh1qp0vMG2sT9lZdbi3Fw=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
   />
 
   <!-- jQuery & Bootstrap JS -->
@@ -25,9 +25,10 @@
      * Toggle Which Section is Shown
      ****************************************/
     function showSection(sectionID) {
-      // Hide both
+      // Hide all possible sections
       document.getElementById("gtmSection").style.display = "none";
       document.getElementById("stockAverageSection").style.display = "none";
+      document.getElementById("stockAverageSection2").style.display = "none";
 
       // Show the requested section
       document.getElementById(sectionID).style.display = "block";
@@ -55,7 +56,7 @@
       // Gold capacity based on the USD amount
       const gold_weight = (usd_amount_to_send / gold_rate_10g_usd).toFixed(2);
       
-      // Value in INR if that gold were purchased in India
+      // Value in INR if that gold was purchased in India
       const purchased_gold_value_inr = gold_weight * gold_rate_10g_ind_inr;
       
       // If you simply exchanged USD to INR
@@ -80,7 +81,7 @@
     }
 
     /****************************************
-     * 2) STOCK AVERAGE
+     * 2) STOCK AVERAGE (Original)
      ****************************************/
     function calculateNewAverage(){
       const cost_price    = parseFloat(document.getElementById('cost_price').value);
@@ -98,12 +99,12 @@
         return;
       }
 
-      // Using the Python logic get_new_avg():
-      // cost_value = cost_price * quantity_held
-      // new_shares_value = market_price * new_shares
-      // total_cost_value = cost_value + new_shares_value
-      // total_shares = quantity_held + new_shares
-      // new_avg = (total_cost_value / total_shares).toFixed(2)
+      // def get_new_avg(cost_price,quantity_held,market_price,new_shares):
+      //     cost_value = cost_price * quantity_held
+      //     new_shares_value = market_price * new_shares
+      //     total_cost_value = cost_value + new_shares_value
+      //     total_shares = quantity_held + new_shares
+      //     new_avg = (total_cost_value / total_shares).toFixed(2)
 
       const cost_value       = cost_price * quantity_held;
       const new_shares_value = market_price * new_shares;
@@ -111,7 +112,6 @@
       const total_shares     = quantity_held + new_shares;
       const new_avg          = (total_cost_value / total_shares).toFixed(2);
 
-      // Table with all inputs and the new average
       let resultTable = `
         <table class="table table-striped">
           <tr><td>Cost Price</td><td>${cost_price}</td></tr>
@@ -124,6 +124,7 @@
           </tr>
         </table>
       `;
+
       document.getElementById("avg_output").innerHTML = resultTable;
     }
 
@@ -135,6 +136,130 @@
       document.getElementById("avg_output").innerHTML = '';
     }
 
+
+    /****************************************
+     * 3) STOCK AVERAGE SECTION 2 (New)
+     *    5 inputs:
+     *      cost_price2
+     *      quantity_held2
+     *      market_price2
+     *      new_shares2
+     *      new_average_price2
+     *    Fill exactly 4, the 5th is computed.
+     ****************************************/
+    function calculateNewAverage2(){
+      // Get the values (or NaN if empty)
+      let cost_price      = parseFloat(document.getElementById('cost_price2').value);
+      let quantity_held   = parseFloat(document.getElementById('quantity_held2').value);
+      let market_price    = parseFloat(document.getElementById('market_price2').value);
+      let new_shares      = parseFloat(document.getElementById('new_shares2').value);
+      let new_avg_price   = parseFloat(document.getElementById('new_average_price2').value);
+
+      // Count how many are valid numbers
+      let values = [
+        cost_price, 
+        quantity_held, 
+        market_price, 
+        new_shares, 
+        new_avg_price
+      ];
+
+      // This array is parallel to the above variables
+      // We'll count how many are "valid" (not NaN).
+      let validCount = values.reduce((acc, val) => acc + (isNaN(val) ? 0 : 1), 0);
+
+      // We need EXACTLY 4 valid inputs (1 blank) to solve for the 5th.
+      if (validCount !== 4) {
+        alert("Please fill exactly 4 fields, leaving the 5th empty.");
+        return;
+      }
+
+      // The standard formula (like in original):
+      // total_cost_value = (cost_price * quantity_held) + (market_price * new_shares)
+      // total_shares = quantity_held + new_shares
+      // new_avg = total_cost_value / total_shares
+
+      // We'll find which one is NaN, then solve for it.
+
+      // If new_avg_price is missing, compute it.
+      if (isNaN(new_avg_price)) {
+        let total_cost_value = (cost_price * quantity_held) + (market_price * new_shares);
+        let total_shares = quantity_held + new_shares;
+        new_avg_price = (total_cost_value / total_shares).toFixed(2);
+      }
+      // If cost_price is missing, solve:
+      else if (isNaN(cost_price)) {
+        // new_avg_price * (quantity_held + new_shares) = (cost_price * quantity_held) + (market_price * new_shares)
+        // cost_price * quantity_held = new_avg_price*(quantity_held + new_shares) - (market_price*new_shares)
+        // cost_price = [ new_avg_price*(quantity_held + new_shares) - (market_price*new_shares) ] / quantity_held
+        cost_price = (
+          new_avg_price * (quantity_held + new_shares) - 
+          (market_price * new_shares)
+        ) / quantity_held;
+        cost_price = parseFloat(cost_price.toFixed(2));
+      }
+      // If quantity_held is missing, solve:
+      else if (isNaN(quantity_held)) {
+        // new_avg_price = [ (cost_price * quantity_held) + (market_price * new_shares ) ] / [ quantity_held + new_shares ]
+        // => new_avg_price*(quantity_held + new_shares) = cost_price*quantity_held + market_price*new_shares
+        // => new_avg_price*quantity_held + new_avg_price*new_shares = cost_price*quantity_held + market_price*new_shares
+        // => quantity_held*(new_avg_price - cost_price) = new_shares*(market_price - new_avg_price)
+        // => quantity_held = [ new_shares*(market_price - new_avg_price) ] / (new_avg_price - cost_price)
+        quantity_held = (
+          new_shares * (market_price - new_avg_price)
+        ) / (new_avg_price - cost_price);
+        quantity_held = parseFloat(quantity_held.toFixed(2));
+      }
+      // If market_price is missing, solve:
+      else if (isNaN(market_price)) {
+        // new_avg_price*(quantity_held + new_shares) = cost_price*quantity_held + (market_price * new_shares)
+        // => market_price * new_shares = new_avg_price*(quantity_held + new_shares) - cost_price*quantity_held
+        // => market_price = [ new_avg_price*(quantity_held + new_shares) - cost_price*quantity_held ] / new_shares
+        market_price = (
+          new_avg_price*(quantity_held + new_shares) - 
+          (cost_price*quantity_held)
+        ) / new_shares;
+        market_price = parseFloat(market_price.toFixed(2));
+      }
+      // If new_shares is missing, solve:
+      else if (isNaN(new_shares)) {
+        // new_avg_price*(quantity_held + new_shares) = cost_price*quantity_held + (market_price*new_shares)
+        // => new_avg_price*quantity_held + new_avg_price*new_shares = cost_price*quantity_held + market_price*new_shares
+        // => new_avg_price*new_shares - market_price*new_shares = cost_price*quantity_held - new_avg_price*quantity_held
+        // => new_shares*(new_avg_price - market_price) = quantity_held*(cost_price - new_avg_price)
+        // => new_shares = [ quantity_held*(cost_price - new_avg_price) ] / (new_avg_price - market_price)
+        new_shares = (
+          quantity_held*(cost_price - new_avg_price)
+        ) / (new_avg_price - market_price);
+        new_shares = parseFloat(new_shares.toFixed(2));
+      }
+
+      // Now we have all 5 values. Let's build an output table:
+      let output2 = `
+        <table class="table table-striped">
+          <tr><td>Cost Price</td><td>${cost_price}</td></tr>
+          <tr><td>Quantity Held</td><td>${quantity_held}</td></tr>
+          <tr><td>Market Price</td><td>${market_price}</td></tr>
+          <tr><td>New Shares</td><td>${new_shares}</td></tr>
+          <tr class="table-info">
+            <td>New Average Price</td>
+            <td><strong>${parseFloat(new_avg_price)}</strong></td>
+          </tr>
+        </table>
+      `;
+
+      document.getElementById("avg_output2").innerHTML = output2;
+    }
+
+    function clearFormStock2(){
+      document.getElementById('cost_price2').value         = '';
+      document.getElementById('quantity_held2').value      = '';
+      document.getElementById('market_price2').value       = '';
+      document.getElementById('new_shares2').value         = '';
+      document.getElementById('new_average_price2').value  = '';
+      document.getElementById("avg_output2").innerHTML     = '';
+    }
+
     // Show GTM section by default on page load
     document.addEventListener('DOMContentLoaded', function(){
       showSection("gtmSection"); 
@@ -142,9 +267,10 @@
   </script>
 
   <style>
-    /* Optional: small spacing above each main section */
+    /* Let Bootstrap handle responsiveness; no pinned/fixed menu here. */
     #gtmSection,
-    #stockAverageSection {
+    #stockAverageSection,
+    #stockAverageSection2 {
       margin-top: 1rem;
     }
   </style>
@@ -154,29 +280,26 @@
 <div class="container-fluid">
   <div class="row">
     
-    <!-- LEFT COLUMN: MENU (col-12 on mobile, col-3 on larger screens) -->
+    <!-- LEFT COLUMN: MENU -->
     <div class="col-12 col-md-3 col-lg-3">
       <div class="card mt-3">
-        <div class="card-header text-white bg-info">
+        <div class="card-header bg-info text-white">
           <i class="fas fa-bars"></i> Menu
         </div>
         <ul class="list-group list-group-flush">
           <li class="list-group-item">
-            <a 
-              href="javascript:void(0)"
-              class="text-decoration-none"
-              onclick="showSection('gtmSection')"
-            >
+            <a href="javascript:void(0)" class="text-decoration-none" onclick="showSection('gtmSection')">
               <i class="fas fa-coins"></i> GTM
             </a>
           </li>
           <li class="list-group-item">
-            <a 
-              href="javascript:void(0)"
-              class="text-decoration-none"
-              onclick="showSection('stockAverageSection')"
-            >
+            <a href="javascript:void(0)" class="text-decoration-none" onclick="showSection('stockAverageSection')">
               <i class="fas fa-chart-line"></i> Stock Average
+            </a>
+          </li>
+          <li class="list-group-item">
+            <a href="javascript:void(0)" class="text-decoration-none" onclick="showSection('stockAverageSection2')">
+              <i class="fas fa-calculator"></i> Stock Average 2
             </a>
           </li>
         </ul>
@@ -184,7 +307,7 @@
     </div>
     <!-- END MENU COLUMN -->
 
-    <!-- RIGHT COLUMN: MAIN CONTENT (col-12 on mobile, col-9 on larger screens) -->
+    <!-- RIGHT COLUMN: MAIN CONTENT -->
     <div class="col-12 col-md-9 col-lg-9">
       
       <!-- 1) GTM Section (Uses USD) -->
@@ -245,7 +368,7 @@
       </div>
       <!-- End GTM Section -->
 
-      <!-- 2) Stock Average Section -->
+      <!-- 2) Stock Average Section (Original, Unchanged) -->
       <div id="stockAverageSection" style="display: none;">
         <!-- Stock Average Card -->
         <div class="card mt-3">
@@ -301,9 +424,76 @@
           </div>
         </div>
       </div>
-      <!-- End Stock Average Section -->
+      <!-- End Original Stock Average Section -->
+
+      <!-- 3) Stock Average Section 2 (New) -->
+      <div id="stockAverageSection2" style="display: none;">
+        <!-- Stock Average Card 2 -->
+        <div class="card mt-3">
+          <div class="card-header">
+            Stock Average 2
+          </div>
+          <div class="card-body">
+            <p class="text-muted">
+              Fill exactly <strong>4</strong> of the fields below; leave the 5th <strong>blank</strong>. 
+              Then click "Calculate" and we'll solve for the missing field.
+            </p>
+            <div class="row">
+              <div class="col-3">&nbsp;</div>
+              <div class="col-6">
+                
+                <div class="form-group row">
+                  <label for="cost_price2">Cost Price:</label>
+                  <input type="text" class="form-control" id="cost_price2">
+                </div>
+                
+                <div class="form-group row">
+                  <label for="quantity_held2">Quantity Held:</label>
+                  <input type="text" class="form-control" id="quantity_held2">
+                </div>
+                
+                <div class="form-group row">
+                  <label for="market_price2">Market Price:</label>
+                  <input type="text" class="form-control" id="market_price2">
+                </div>
+                
+                <div class="form-group row">
+                  <label for="new_shares2">New Shares:</label>
+                  <input type="text" class="form-control" id="new_shares2">
+                </div>
+
+                <div class="form-group row">
+                  <label for="new_average_price2">New Average Price:</label>
+                  <input type="text" class="form-control" id="new_average_price2">
+                </div>
+
+              </div>
+              <div class="col-3">&nbsp;</div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button type="button" class="btn btn-primary" onclick="calculateNewAverage2()">Calculate</button>
+            <button type="button" class="btn btn-secondary" onclick="clearFormStock2()">Clear</button>
+          </div>
+        </div>
+
+        <!-- Stock Average 2 Result Card -->
+        <div class="card mt-3">
+          <div class="card-header">Stock Average 2 Result</div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-3">&nbsp;</div>
+              <div class="col-6">
+                <div id="avg_output2"></div>
+              </div>
+              <div class="col-3">&nbsp;</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End Stock Average Section 2 -->
     </div>
-    <!-- End Main Content Column -->
+    <!-- End Right Column -->
   </div>
 </div>
 
