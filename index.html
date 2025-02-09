@@ -91,20 +91,13 @@
 
       if (
         isNaN(cost_price) || 
-        isNaN(quantity_held) ||
-        isNaN(market_price) ||
+        isNaN(quantity_held)||
+        isNaN(market_price)||
         isNaN(new_shares)
       ) {
         alert("Please provide valid input in Stock Average form.");
         return;
       }
-
-      // def get_new_avg(cost_price,quantity_held,market_price,new_shares):
-      //     cost_value = cost_price * quantity_held
-      //     new_shares_value = market_price * new_shares
-      //     total_cost_value = cost_value + new_shares_value
-      //     total_shares = quantity_held + new_shares
-      //     new_avg = (total_cost_value / total_shares).toFixed(2)
 
       const cost_value       = cost_price * quantity_held;
       const new_shares_value = market_price * new_shares;
@@ -139,14 +132,20 @@
 
     /****************************************
      * 3) STOCK AVERAGE SECTION 2 (New)
-     *    5 inputs:
+     *    6 inputs:
      *      cost_price2
      *      quantity_held2
      *      market_price2
      *      new_shares2
      *      new_average_price2
-     *    Fill exactly 4, the 5th is computed.
-     *    We'll highlight the row that was computed.
+     *      total_new_investment2
+     *
+     *    Fill exactly 4 independent fields; note that the pair 
+     *    (New Shares, Total New Investment) are linked by:
+     *      Total New Investment = New Shares × Market Price
+     *
+     *    Provide one (and only one) of New Shares or Total New Investment.
+     *    The missing field will be computed and highlighted.
      ****************************************/
     function calculateNewAverage2(){
       // Get the values (or NaN if empty)
@@ -155,84 +154,116 @@
       let market_price    = parseFloat(document.getElementById('market_price2').value);
       let new_shares      = parseFloat(document.getElementById('new_shares2').value);
       let new_avg_price   = parseFloat(document.getElementById('new_average_price2').value);
+      let total_new_investment = parseFloat(document.getElementById('total_new_investment2').value);
 
-      // We'll store these in an array to check how many are valid.
-      let values = [cost_price, quantity_held, market_price, new_shares, new_avg_price];
-      let validCount = values.reduce((acc, val) => acc + (isNaN(val) ? 0 : 1), 0);
-
-      // We need EXACTLY 4 valid inputs, 1 blank
-      if (validCount !== 4) {
-        alert("Please fill exactly 4 fields, leaving any 1 empty.");
+      // Check the dependent pair: exactly one of New Shares or Total New Investment must be provided.
+      const newSharesProvided = !isNaN(new_shares);
+      const totalNewInvestmentProvided = !isNaN(total_new_investment);
+      if (newSharesProvided && totalNewInvestmentProvided) {
+        alert("Please provide only one of New Shares or Total New Investment, not both.");
+        return;
+      }
+      if (!newSharesProvided && !totalNewInvestmentProvided) {
+        alert("Please provide either New Shares or Total New Investment.");
         return;
       }
 
-      // We'll keep track of which variable is missing so we can highlight it
-      let missingVar = null; 
+      // Count provided among the independent fields:
+      // Independent fields: cost_price2, quantity_held2, market_price2, new_average_price2, and one from the pair.
+      let count = 0;
+      if (!isNaN(cost_price)) count++;
+      if (!isNaN(quantity_held)) count++;
+      if (!isNaN(market_price)) count++;
+      if (!isNaN(new_avg_price)) count++;
+      // For the pair, exactly one is provided:
+      count++;
 
-      /*
-        The standard formula:
-          total_cost_value = (cost_price * quantity_held) + (market_price * new_shares)
-          total_shares = quantity_held + new_shares
-          new_avg = total_cost_value / total_shares
+      if (count !== 4) {
+        alert("Please fill exactly 4 fields among Cost Price, Quantity Held, Market Price, New Average Price, and one of (New Shares or Total New Investment).");
+        return;
+      }
+
+      // Determine which independent variable is missing
+      let missingVar = "";
+      if (isNaN(cost_price)) {
+        missingVar = "cost_price";
+      } else if (isNaN(quantity_held)) {
+        missingVar = "quantity_held";
+      } else if (isNaN(market_price)) {
+        missingVar = "market_price";
+      } else if (isNaN(new_avg_price)) {
+        missingVar = "new_avg_price";
+      } else if (!newSharesProvided) {  // then New Shares is missing (Total New Investment is provided)
+        missingVar = "new_shares";
+      } else if (!totalNewInvestmentProvided) {  // then Total New Investment is missing (New Shares is provided)
+        missingVar = "total_new_investment";
+      }
+
+      /* 
+         Standard formula for new average:
+           total_cost_value = (cost_price * quantity_held) + (market_price * new_shares)
+           total_shares     = quantity_held + new_shares
+           new_avg_price    = total_cost_value / total_shares
       */
 
-      // If new_avg_price is missing
-      if (isNaN(new_avg_price)) {
-        missingVar = "new_avg_price";
-        let total_cost_value = (cost_price * quantity_held) + (market_price * new_shares);
-        let total_shares = quantity_held + new_shares;
-        new_avg_price = (total_cost_value / total_shares).toFixed(2);
+      switch(missingVar) {
+        case "cost_price":
+          if (quantity_held === 0) {
+            alert("Quantity Held cannot be zero.");
+            return;
+          }
+          cost_price = (new_avg_price * (quantity_held + new_shares) - market_price * new_shares) / quantity_held;
+          cost_price = parseFloat(cost_price.toFixed(2));
+          break;
+        case "quantity_held":
+          if ((new_avg_price - cost_price) === 0) {
+            alert("Invalid input values: division by zero.");
+            return;
+          }
+          quantity_held = (new_shares * (market_price - new_avg_price)) / (new_avg_price - cost_price);
+          quantity_held = parseFloat(quantity_held.toFixed(2));
+          break;
+        case "market_price":
+          if (new_shares === 0) {
+            alert("New Shares cannot be zero.");
+            return;
+          }
+          market_price = (new_avg_price * (quantity_held + new_shares) - cost_price * quantity_held) / new_shares;
+          market_price = parseFloat(market_price.toFixed(2));
+          break;
+        case "new_avg_price":
+          if ((quantity_held + new_shares) === 0) {
+            alert("Total shares cannot be zero.");
+            return;
+          }
+          new_avg_price = ((cost_price * quantity_held) + (market_price * new_shares)) / (quantity_held + new_shares);
+          new_avg_price = parseFloat(new_avg_price.toFixed(2));
+          break;
+        case "new_shares":
+          // Compute New Shares from Total New Investment: new_shares = total_new_investment / market_price
+          if (market_price === 0) {
+            alert("Market Price cannot be zero.");
+            return;
+          }
+          new_shares = total_new_investment / market_price;
+          new_shares = parseFloat(new_shares.toFixed(2));
+          break;
+        case "total_new_investment":
+          // Compute Total New Investment from New Shares: total_new_investment = new_shares * market_price
+          total_new_investment = new_shares * market_price;
+          total_new_investment = parseFloat(total_new_investment.toFixed(2));
+          break;
       }
-      // If cost_price is missing
-      else if (isNaN(cost_price)) {
-        missingVar = "cost_price";
-        cost_price = (
-          new_avg_price * (quantity_held + new_shares) - 
-          (market_price * new_shares)
-        ) / quantity_held;
-        cost_price = parseFloat(cost_price.toFixed(2));
-      }
-      // If quantity_held is missing
-      else if (isNaN(quantity_held)) {
-        missingVar = "quantity_held";
-        quantity_held = (
-          new_shares * (market_price - new_avg_price)
-        ) / (new_avg_price - cost_price);
-        quantity_held = parseFloat(quantity_held.toFixed(2));
-      }
-      // If market_price is missing
-      else if (isNaN(market_price)) {
-        missingVar = "market_price";
-        market_price = (
-          new_avg_price*(quantity_held + new_shares) -
-          (cost_price*quantity_held)
-        ) / new_shares;
-        market_price = parseFloat(market_price.toFixed(2));
-      }
-      // If new_shares is missing
-      else if (isNaN(new_shares)) {
-        missingVar = "new_shares";
-        new_shares = (
-          quantity_held*(cost_price - new_avg_price)
-        ) / (new_avg_price - market_price);
 
-        // Round new_shares to ensure no decimal
-        new_shares = Math.round(new_shares);
-      }
+      // Build dynamic classes for highlighting the computed (missing) variable
+      const rowClass_costPrice    = missingVar === "cost_price"         ? "table-info" : "";
+      const rowClass_quantityHeld = missingVar === "quantity_held"      ? "table-info" : "";
+      const rowClass_marketPrice  = missingVar === "market_price"       ? "table-info" : "";
+      const rowClass_newAvg       = missingVar === "new_avg_price"      ? "table-info" : "";
+      const rowClass_newShares    = missingVar === "new_shares"         ? "table-info" : "";
+      const rowClass_totalNewInv  = missingVar === "total_new_investment" ? "table-info" : "";
 
-      // If new_shares was provided or just calculated, ensure no decimals
-      if (!isNaN(new_shares)) {
-        new_shares = Math.round(new_shares);
-      }
-
-      // Build dynamic classes for highlighting the missing variable
-      const rowClass_costPrice    = missingVar === "cost_price"       ? "table-info" : "";
-      const rowClass_quantityHeld = missingVar === "quantity_held"    ? "table-info" : "";
-      const rowClass_marketPrice  = missingVar === "market_price"     ? "table-info" : "";
-      const rowClass_newShares    = missingVar === "new_shares"       ? "table-info" : "";
-      const rowClass_newAvg       = missingVar === "new_avg_price"    ? "table-info" : "";
-
-      // Final output
+      // Final output table
       let output2 = `
         <table class="table table-striped">
           <tr class="${rowClass_costPrice}">
@@ -253,7 +284,11 @@
           </tr>
           <tr class="${rowClass_newAvg}">
             <td>New Average Price</td>
-            <td><strong>${parseFloat(new_avg_price) || 0}</strong></td>
+            <td><strong>${new_avg_price || 0}</strong></td>
+          </tr>
+          <tr class="${rowClass_totalNewInv}">
+            <td>Total New Investment</td>
+            <td>${total_new_investment || 0}</td>
           </tr>
         </table>
       `;
@@ -267,6 +302,7 @@
       document.getElementById('market_price2').value       = '';
       document.getElementById('new_shares2').value         = '';
       document.getElementById('new_average_price2').value  = '';
+      document.getElementById('total_new_investment2').value = '';
       document.getElementById("avg_output2").innerHTML     = '';
     }
 
@@ -445,8 +481,9 @@
           </div>
           <div class="card-body">
             <p class="text-muted">
-              Fill exactly <strong>4</strong> of the fields below; leave the 5th <strong>blank</strong>. 
-              Then click "Calculate" and we'll solve for the missing field
+              Fill exactly <strong>4</strong> independent fields from the following:
+              Cost Price, Quantity Held, Market Price, New Average Price, and one of (New Shares or Total New Investment).
+              The missing field will be computed and highlighted.
             </p>
             <div class="row">
               <div class="col-3">&nbsp;</div>
@@ -475,6 +512,11 @@
                 <div class="form-group row">
                   <label for="new_average_price2">New Average Price:</label>
                   <input type="text" class="form-control" id="new_average_price2">
+                </div>
+
+                <div class="form-group row">
+                  <label for="total_new_investment2">Total New Investment:</label>
+                  <input type="text" class="form-control" id="total_new_investment2">
                 </div>
 
               </div>
