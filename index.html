@@ -41,7 +41,7 @@
       const usd_amount_to_send   = parseFloat(document.getElementById('usd_amount_to_send').value);
       const usd_to_inr           = parseFloat(document.getElementById('usd_to_inr').value);
       const gold_rate_10g_usd    = parseFloat(document.getElementById('gold_rate_10g_usd').value);
-      const gold_rate_10g_ind_inr= parseFloat(document.getElementById('gold_rate_10g_ind_inr').value);
+      const gold_rate_10g_ind_inr = parseFloat(document.getElementById('gold_rate_10g_ind_inr').value);
 
       if (
         isNaN(usd_amount_to_send) || 
@@ -76,7 +76,7 @@
       document.getElementById('usd_amount_to_send').value   = '';
       document.getElementById('usd_to_inr').value           = '';
       document.getElementById('gold_rate_10g_usd').value    = '';
-      document.getElementById('gold_rate_10g_ind_inr').value= '';
+      document.getElementById('gold_rate_10g_ind_inr').value = '';
       document.getElementById("output").innerHTML = '';
     }
 
@@ -140,11 +140,8 @@
      *      new_average_price2
      *      total_new_investment2
      *
-     *    Fill exactly 4 independent fields; note that the pair 
-     *    (New Shares, Total New Investment) are linked by:
-     *      Total New Investment = New Shares × Market Price
-     *
-     *    Provide one (and only one) of New Shares or Total New Investment.
+     *    Fill exactly 4 independent fields from:
+     *    Cost Price, Quantity Held, Market Price, New Average Price, and one of (New Shares or Total New Investment).
      *    The missing field will be computed and highlighted.
      ****************************************/
     function calculateNewAverage2(){
@@ -474,71 +471,63 @@
 
       <!-- 3) Stock Average Section 2 (New) -->
       <div id="stockAverageSection2" style="display: none;">
-        <!-- Stock Average Card 2 -->
-        <div class="card mt-3">
-          <div class="card-header">
-            Stock Average 2
-          </div>
-          <div class="card-body">
-            <p class="text-muted">
-              Fill exactly <strong>4</strong> independent fields from the following:
-              Cost Price, Quantity Held, Market Price, New Average Price, and one of (New Shares or Total New Investment).
-              The missing field will be computed and highlighted.
-            </p>
-            <div class="row">
-              <div class="col-3">&nbsp;</div>
-              <div class="col-6">
-                
-                <div class="form-group row">
+        <div class="row">
+          <!-- Inputs Column -->
+          <div class="col-md-6">
+            <div class="card mt-3">
+              <div class="card-header">
+                Stock Average 2 - Inputs
+              </div>
+              <div class="card-body">
+                <p class="text-muted">
+                  Fill exactly <strong>4</strong> independent fields from the following:
+                  Cost Price, Quantity Held, Market Price, New Average Price, and one of (New Shares or Total New Investment).
+                  The missing field will be computed and highlighted.
+                </p>
+                <div class="form-group">
                   <label for="cost_price2">Cost Price:</label>
                   <input type="text" class="form-control" id="cost_price2">
                 </div>
-                
-                <div class="form-group row">
+                <div class="form-group">
                   <label for="quantity_held2">Quantity Held:</label>
                   <input type="text" class="form-control" id="quantity_held2">
                 </div>
-                
-                <div class="form-group row">
+                <div class="form-group">
                   <label for="market_price2">Market Price:</label>
                   <input type="text" class="form-control" id="market_price2">
                 </div>
-                
-                <div class="form-group row">
-                  <label for="new_shares2">New Shares:</label>
-                  <input type="text" class="form-control" id="new_shares2">
-                </div>
-
-                <div class="form-group row">
+                <div class="form-group">
                   <label for="new_average_price2">New Average Price:</label>
                   <input type="text" class="form-control" id="new_average_price2">
                 </div>
-
+                <!-- New Shares and Total New Investment on the same row with an "Or" between -->
                 <div class="form-group row">
-                  <label for="total_new_investment2">Total New Investment:</label>
-                  <input type="text" class="form-control" id="total_new_investment2">
+                  <div class="col-md-5">
+                    <label for="new_shares2">New Shares:</label>
+                    <input type="text" class="form-control" id="new_shares2">
+                  </div>
+                  <div class="col-md-2 d-flex align-items-center justify-content-center">
+                    <span>Or</span>
+                  </div>
+                  <div class="col-md-5">
+                    <label for="total_new_investment2">Total New Investment:</label>
+                    <input type="text" class="form-control" id="total_new_investment2">
+                  </div>
                 </div>
-
               </div>
-              <div class="col-3">&nbsp;</div>
+              <div class="card-footer">
+                <button type="button" class="btn btn-primary" onclick="calculateNewAverage2()">Calculate</button>
+                <button type="button" class="btn btn-secondary" onclick="clearFormStock2()">Clear</button>
+              </div>
             </div>
           </div>
-          <div class="card-footer">
-            <button type="button" class="btn btn-primary" onclick="calculateNewAverage2()">Calculate</button>
-            <button type="button" class="btn btn-secondary" onclick="clearFormStock2()">Clear</button>
-          </div>
-        </div>
-
-        <!-- Stock Average 2 Result -->
-        <div class="card mt-3">
-          <div class="card-header">Stock Average 2 Result</div>
-          <div class="card-body">
-            <div class="row">
-              <div class="col-3">&nbsp;</div>
-              <div class="col-6">
+          <!-- Result Column -->
+          <div class="col-md-6">
+            <div class="card mt-3">
+              <div class="card-header">Stock Average 2 Result</div>
+              <div class="card-body">
                 <div id="avg_output2"></div>
               </div>
-              <div class="col-3">&nbsp;</div>
             </div>
           </div>
         </div>
