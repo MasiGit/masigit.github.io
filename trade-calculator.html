@@ -53,11 +53,10 @@
       
       // Set color class based on positive/negative net benefit
       const resultClass = netBenefit >= 0 ? 'text-success' : 'text-danger';
-        let html='<table class="table table-striped">';
-      html+=`<tr><td>Proceeds from Stock 1 sale</td><td>USD ${proceeds1.toFixed(2)}</td></tr>`;
+        let html='<table class="table table-striped">';      html+=`<tr><td>Proceeds from Stock 1 sale</td><td>USD ${proceeds1.toFixed(2)}</td></tr>`;
       html+=`<tr><td>Realized P/L on Stock 1</td><td>USD ${profitLoss1.toFixed(2)}</td></tr>`;
       html+=`<tr><td>Expected Dividend from Stock 1</td><td>USD ${totalDiv1.toFixed(2)}</td></tr>`;
-      html+=`<tr><td>Shares purchasable of Stock 2</td><td>${hold2.toFixed(2)}</td></tr>`;
+      html+=`<tr class="table-primary"><td>Shares purchasable of Stock 2</td><td><strong>${hold2.toFixed(2)}</strong> shares</td></tr>`;
       html+=`<tr><td>Expected Dividend from Stock 2</td><td>USD ${totalDiv2.toFixed(2)}</td></tr>`;
       html+=`<tr><td>Difference in Dividends</td><td>USD ${diffDiv.toFixed(2)}</td></tr>`;
         // Add future price impact rows
