@@ -3,149 +3,81 @@
 <head>
   <meta charset="UTF-8">
   <title>GTM & Stock Average App (USD & SAR with Trade)</title>
-
-  <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="lib/css/bootstrap4.6.1.min.css">
-  <!-- Font Awesome for Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-OkD1nCn6dZzJtC6OGx0Gv82ZASVal8QXYeJl5Q2OWq+BW+2FYD44s06Idq0GvTY0gVaYM3Bh1qp0vMG2sT9lZdbi3Fw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-  <!-- jQuery & Bootstrap JS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <script src="lib/scripts/jquery.slim.min.js"></script>
   <script src="lib/scripts/bootstrap4.6.1.min.js"></script>
-
-  <script>
-    function showSection(id) {
-      ['gtmSection','stockAverageSection','stockAverageSection2','tradeSection'].forEach(s=>document.getElementById(s).style.display='none');
-      document.getElementById(id).style.display='block';
-    }
-
-    function calculateTrade() {
-      const cost1 = parseFloat(document.getElementById('cost1').value) || 0;
-      const exp1  = parseFloat(document.getElementById('exp1').value)  || 0;  // expected sell price for Stock1
-      const hold1 = parseFloat(document.getElementById('hold1').value)|| 0;
-      const div1  = parseFloat(document.getElementById('div1').value) || 0;
-      const exp2  = parseFloat(document.getElementById('exp2').value)  || 0;  // expected buy price for Stock2
-      const div2  = parseFloat(document.getElementById('div2').value) || 0;
-
-      // sale at expected price 1
-      const proceeds1   = exp1 * hold1;
-      const profitLoss1 = (exp1 - cost1) * hold1;
-      const totalDiv1   = div1 * hold1;
-
-      // buy at expected price 2
-      const hold2     = exp2>0 ? proceeds1 / exp2 : 0;
-      const totalDiv2 = div2 * hold2;
-
-      const diffDiv    = totalDiv2 - totalDiv1;
-      const netBenefit = profitLoss1 + diffDiv;
-
-      // build table with color-coded net benefit row
-      let html = '<table class="table table-striped">';
-      html += `<tr><td>Expected Sale Price Stock 1</td><td>SAR ${exp1.toFixed(2)}</td></tr>`;
-      html += `<tr><td>Proceeds from Stock 1 sale</td><td>SAR ${proceeds1.toFixed(2)}</td></tr>`;
-      html += `<tr><td>Realized P/L on Stock 1</td><td>SAR ${profitLoss1.toFixed(2)}</td></tr>`;
-      html += `<tr><td>Expected Buy Price Stock 2</td><td>SAR ${exp2.toFixed(2)}</td></tr>`;
-      html += `<tr><td>Shares purchasable of Stock 2</td><td>${hold2.toFixed(2)}</td></tr>`;
-      html += `<tr><td>Expected Dividend from Stock 1</td><td>SAR ${totalDiv1.toFixed(2)}</td></tr>`;
-      html += `<tr><td>Expected Dividend from Stock 2</td><td>SAR ${totalDiv2.toFixed(2)}</td></tr>`;
-      html += `<tr><td>Difference in Dividends</td><td>SAR ${diffDiv.toFixed(2)}</td></tr>`;
-      const rowClass = netBenefit >= 0 ? 'table-success' : 'table-danger';
-      html += `<tr class="${rowClass}"><td><strong>Net Benefit</strong></td><td><strong>SAR ${netBenefit.toFixed(2)}</strong></td></tr>`;
-      html += '</table>';
-
-      document.getElementById('trade_output').innerHTML = html;
-    }
-
-    function clearFormTrade() {
-      ['cost1','exp1','hold1','div1','exp2','div2'].forEach(id => document.getElementById(id).value='');
-      document.getElementById('trade_output').innerHTML = '';
-    }
-
-    document.addEventListener('DOMContentLoaded', ()=> showSection('gtmSection'));
-  </script>
-
-  <style>
-    #gtmSection, #stockAverageSection, #stockAverageSection2, #tradeSection { margin-top:1rem; }
-  </style>
+  <!-- JavaScript logic already included in <head> -->
 </head>
 <body>
 <div class="container-fluid">
   <div class="row">
-    <div class="col-12 col-md-3 col-lg-3">
+    <div class="col-12 col-md-3">
       <div class="card mt-3">
         <div class="card-header bg-info text-white"><i class="fas fa-bars"></i> Menu</div>
         <ul class="list-group list-group-flush">
-          <li class="list-group-item"><a href="#" onclick="showSection('gtmSection')"><i class="fas fa-coins"></i> GTM</a></li>
-          <li class="list-group-item"><a href="#" onclick="showSection('stockAverageSection')"><i class="fas fa-chart-line"></i> Stock Average</a></li>
-          <li class="list-group-item"><a href="#" onclick="showSection('stockAverageSection2')"><i class="fas fa-calculator"></i> Stock Average 2</a></li>
-          <li class="list-group-item"><a href="#" onclick="showSection('tradeSection')"><i class="fas fa-exchange-alt"></i> Trade Calculator</a></li>
+          <li class="list-group-item"><a href="#" onclick="showSection('gtmSection')">GTM (USD)</a></li>
+          <li class="list-group-item"><a href="#" onclick="showSection('stockAverageSection')">Stock Average</a></li>
+          <li class="list-group-item"><a href="#" onclick="showSection('stockAverageSection2')">Stock Average 2</a></li>
+          <li class="list-group-item"><a href="#" onclick="showSection('tradeSection')">Trade Calculator</a></li>
         </ul>
       </div>
     </div>
-
-    <div class="col-12 col-md-9 col-lg-9">
-
-      <!-- GTM & Stock Sections omitted for brevity -->
-
-      <!-- Trade Calculator Section -->
-      <div id="tradeSection" style="display:none;">
-        <div class="card mt-3">
-          <div class="card-header">Trade Calculator (SAR)</div>
-          <div class="card-body">
-            <div class="row">
-
-              <!-- Stock 1 Inputs -->
-              <div class="col-md-6">
-                <h5>Stock 1 (Portfolio)</h5>
-                <div class="form-group">
-                  <label for="cost1">Cost Price (SAR):</label>
-                  <input type="number" step="0.01" class="form-control" id="cost1">
-                </div>
-                <div class="form-group">
-                  <label for="exp1">Expected Sell Price (SAR):</label>
-                  <input type="number" step="0.01" class="form-control" id="exp1">
-                </div>
-                <div class="form-group">
-                  <label for="hold1">Holdings (shares):</label>
-                  <input type="number" step="1" class="form-control" id="hold1">
-                </div>
-                <div class="form-group">
-                  <label for="div1">Expected Dividend/share (SAR):</label>
-                  <input type="number" step="0.01" class="form-control" id="div1">
-                </div>
-              </div>
-
-              <!-- Stock 2 Inputs -->
-              <div class="col-md-6">
-                <h5>Stock 2 (Planning to Buy)</h5>
-                <div class="form-group">
-                  <label for="exp2">Expected Buy Price (SAR):</label>
-                  <input type="number" step="0.01" class="form-control" id="exp2">
-                </div>
-                <div class="form-group">
-                  <label for="div2">Expected Dividend/share (SAR):</label>
-                  <input type="number" step="0.01" class="form-control" id="div2">
-                </div>
-              </div>
-
-            </div>
-          </div>
-          <div class="card-footer">
-            <button class="btn btn-primary" onclick="calculateTrade()">Calculate</button>
-            <button class="btn btn-secondary" onclick="clearFormTrade()">Clear</button>
-          </div>
-        </div>
-        <div class="card mt-3">
-          <div class="card-header">Results</div>
-          <div class="card-body">
-            <div id="trade_output"></div>
-          </div>
-        </div>
+    <div class="col-12 col-md-9">
+      <div id="gtmSection" style="display:none;">
+        <h3>GTM (USD)</h3>
+        <input type="text" id="usd_amount_to_send" class="form-control mb-2" placeholder="USD to Send">
+        <input type="text" id="usd_to_inr" class="form-control mb-2" placeholder="USD to INR Rate">
+        <input type="text" id="gold_rate_10g_usd" class="form-control mb-2" placeholder="Gold Rate (10g) in USD">
+        <input type="text" id="gold_rate_10g_ind_inr" class="form-control mb-2" placeholder="Gold Rate (10g) in INR">
+        <button class="btn btn-primary" onclick="calcluate()">Calculate</button>
+        <button class="btn btn-secondary" onclick="clearFormGTM()">Clear</button>
+        <div id="output" class="mt-3"></div>
       </div>
-      <!-- End Trade Calculator -->
 
+      <div id="stockAverageSection" style="display:none;">
+        <h3>Stock Average</h3>
+        <input type="text" id="cost_price" class="form-control mb-2" placeholder="Cost Price">
+        <input type="text" id="quantity_held" class="form-control mb-2" placeholder="Quantity Held">
+        <input type="text" id="market_price" class="form-control mb-2" placeholder="Market Price">
+        <input type="text" id="new_shares" class="form-control mb-2" placeholder="New Shares">
+        <button class="btn btn-primary" onclick="calculateNewAverage()">Calculate</button>
+        <button class="btn btn-secondary" onclick="clearFormStock()">Clear</button>
+        <div id="avg_output" class="mt-3"></div>
+      </div>
+
+      <div id="stockAverageSection2" style="display:none;">
+        <h3>Stock Average 2</h3>
+        <input type="text" id="cost_price2" class="form-control mb-2" placeholder="Cost Price">
+        <input type="text" id="quantity_held2" class="form-control mb-2" placeholder="Quantity Held">
+        <input type="text" id="market_price2" class="form-control mb-2" placeholder="Market Price">
+        <input type="text" id="new_average_price2" class="form-control mb-2" placeholder="New Average Price">
+        <input type="text" id="new_shares2" class="form-control mb-2" placeholder="New Shares">
+        <input type="text" id="total_new_investment2" class="form-control mb-2" placeholder="Total New Investment">
+        <button class="btn btn-primary" onclick="calculateNewAverage2()">Calculate</button>
+        <button class="btn btn-secondary" onclick="clearFormStock2()">Clear</button>
+        <div id="avg_output2" class="mt-3"></div>
+      </div>
+
+      <div id="tradeSection" style="display:none;">
+        <h3>Trade Calculator (SAR)</h3>
+        <input type="text" id="cost1" class="form-control mb-2" placeholder="Stock 1 Cost Price">
+        <input type="text" id="exp1" class="form-control mb-2" placeholder="Stock 1 Expected Sale Price">
+        <input type="text" id="hold1" class="form-control mb-2" placeholder="Stock 1 Holdings">
+        <input type="text" id="div1" class="form-control mb-2" placeholder="Stock 1 Dividend per Share">
+        <input type="text" id="exp2" class="form-control mb-2" placeholder="Stock 2 Expected Buy Price">
+        <input type="text" id="div2" class="form-control mb-2" placeholder="Stock 2 Dividend per Share">
+        <button class="btn btn-primary" onclick="calculateTrade()">Calculate</button>
+        <button class="btn btn-secondary" onclick="clearFormTrade()">Clear</button>
+        <div id="trade_output" class="mt-3"></div>
+      </div>
     </div>
   </div>
 </div>
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+    showSection('gtmSection');
+  });
+</script>
 </body>
 </html>
