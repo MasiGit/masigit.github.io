@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GTM Calculator (USD-INR)</title>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="lib/css/bootstrap4.6.1.min.css">
+  
+  <!-- Font Awesome Icons -->
+  <link 
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    integrity="sha512-OkD1nCn6dZzJtC6OGx0Gv82ZASVal8QXYeJl5Q2OWq+BW+2FYD44s06Idq0GvTY0gVaYM3Bh1qp0vMG2sT9lZdbi3Fw=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+
+  <!-- Common CSS -->
+  <link rel="stylesheet" href="common.css">
+
+  <!-- jQuery & Bootstrap JS -->
+  <script src="lib/scripts/jquery.slim.min.js"></script>
+  <script src="lib/scripts/bootstrap4.6.1.min.js"></script>
+
+  <script>
+    /****************************************
+     * GTM CALCULATOR (USD)
+     ****************************************/
+    function calcluate(){
+      const usd_amount_to_send    = parseFloat(document.getElementById('usd_amount_to_send').value);
+      const usd_to_inr            = parseFloat(document.getElementById('usd_to_inr').value);
+      const gold_rate_10g_usd     = parseFloat(document.getElementById('gold_rate_10g_usd').value);
+      const gold_rate_10g_ind_inr = parseFloat(document.getElementById('gold_rate_10g_ind_inr').value);
+      if (isNaN(usd_amount_to_send) || isNaN(usd_to_inr) || isNaN(gold_rate_10g_usd) || isNaN(gold_rate_10g_ind_inr)){
+        alert('Please provide valid input (USD).'); return;
+      }
+      const gold_weight           = (usd_amount_to_send / gold_rate_10g_usd).toFixed(2);
+      const purchased_gold_value  = gold_weight * gold_rate_10g_ind_inr;
+      const exchanged_amount_in_inr = usd_amount_to_send * usd_to_inr;
+      let output = '<table class="table table-striped">';
+      output += '<tr><td>Gold purchase capacity (10g units)</td><td>'+ gold_weight +'</td></tr>';
+      output += '<tr><td>Gold value in INR</td><td>'+ purchased_gold_value +'</td></tr>';
+      output += '<tr><td>Exchanged INR amount</td><td>'+ exchanged_amount_in_inr +'</td></tr>';
+      output += '<tr><td>Difference</td><td>'+(purchased_gold_value - exchanged_amount_in_inr)+'</td></tr>';
+      output += '</table>';
+      document.getElementById("output").innerHTML = output;
+    }
+    function clearFormGTM(){
+      ['usd_amount_to_send','usd_to_inr','gold_rate_10g_usd','gold_rate_10g_ind_inr'].forEach(id=>document.getElementById(id).value='');
+      document.getElementById("output").innerHTML = '';
+    }
+  </script>
+</head>
+<body>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12 col-md-3 col-lg-3">
+      <div class="card mt-3">
+        <div class="card-header main-header"><i class="fas fa-bars"></i> Menu</div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item active"><a href="gtm.html" class="text-dark"><i class="fas fa-coins"></i> GTM</a></li>
+          <li class="list-group-item"><a href="stock-average.html"><i class="fas fa-chart-line"></i> Stock Average</a></li>
+          <li class="list-group-item"><a href="stock-average2.html"><i class="fas fa-calculator"></i> Stock Average 2</a></li>
+          <li class="list-group-item"><a href="trade-calculator.html"><i class="fas fa-exchange-alt"></i> Trade Calculator</a></li>
+          <li class="list-group-item"><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-12 col-md-9 col-lg-9">
+      <div class="section">
+        <div class="card mt-3"><div class="card-header">GTM (USD)</div><div class="card-body">
+          <div class="form-group"><label for="usd_to_inr">USD-INR:</label><input class="form-control" id="usd_to_inr"></div>
+          <div class="form-group"><label for="usd_amount_to_send">Amount to Send (USD):</label><input class="form-control" id="usd_amount_to_send"></div>
+          <div class="form-group"><label for="gold_rate_10g_usd">Gold Rate 10g (USD):</label><input class="form-control" id="gold_rate_10g_usd"></div>
+          <div class="form-group"><label for="gold_rate_10g_ind_inr">Gold Rate 10g (INR):</label><input class="form-control" id="gold_rate_10g_ind_inr"></div>
+        </div><div class="card-footer">
+          <button class="btn btn-primary" onclick="calcluate()">Submit</button>
+          <button class="btn btn-secondary" onclick="clearFormGTM()">Clear</button>
+        </div></div>
+        <div class="card mt-3"><div class="card-header">Result</div><div class="card-body"><div id="output"></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

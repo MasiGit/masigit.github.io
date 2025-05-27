@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Trade Calculator (SAR)</title>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="lib/css/bootstrap4.6.1.min.css">
+  
+  <!-- Font Awesome Icons -->
+  <link 
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    integrity="sha512-OkD1nCn6dZzJtC6OGx0Gv82ZASVal8QXYeJl5Q2OWq+BW+2FYD44s06Idq0GvTY0gVaYM3Bh1qp0vMG2sT9lZdbi3Fw=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+
+  <!-- Common CSS -->
+  <link rel="stylesheet" href="common.css">
+
+  <!-- jQuery & Bootstrap JS -->
+  <script src="lib/scripts/jquery.slim.min.js"></script>
+  <script src="lib/scripts/bootstrap4.6.1.min.js"></script>
+
+  <script>
+    /****************************************
+     * TRADE CALCULATOR (SAR)
+     ****************************************/
+    function calculateTrade(){
+      const cost1=parseFloat(document.getElementById('cost1').value)||0;
+      const mkt1=parseFloat(document.getElementById('mkt1').value)||0;
+      const hold1=parseFloat(document.getElementById('hold1').value)||0;
+      const div1=parseFloat(document.getElementById('div1').value)||0;
+      const mkt2=parseFloat(document.getElementById('mkt2').value)||0;
+      const div2=parseFloat(document.getElementById('div2').value)||0;
+      const proceeds1=mkt1*hold1;
+      const profitLoss1=(mkt1-cost1)*hold1;
+      const totalDiv1=div1*hold1;
+      const hold2=mkt2>0?proceeds1/mkt2:0;
+      const totalDiv2=div2*hold2;
+      const diffDiv=totalDiv2-totalDiv1;
+      const netBenefit=profitLoss1+diffDiv;
+      let html='<table class="table table-striped">';
+      html+=`<tr><td>Proceeds from Stock 1 sale</td><td>SAR ${proceeds1.toFixed(2)}</td></tr>`;
+      html+=`<tr><td>Realized P/L on Stock 1</td><td>SAR ${profitLoss1.toFixed(2)}</td></tr>`;
+      html+=`<tr><td>Expected Dividend from Stock 1</td><td>SAR ${totalDiv1.toFixed(2)}</td></tr>`;
+      html+=`<tr><td>Shares purchasable of Stock 2</td><td>${hold2.toFixed(2)}</td></tr>`;
+      html+=`<tr><td>Expected Dividend from Stock 2</td><td>SAR ${totalDiv2.toFixed(2)}</td></tr>`;
+      html+=`<tr><td>Difference in Dividends</td><td>SAR ${diffDiv.toFixed(2)}</td></tr>`;
+      html+=`<tr class=\"table-info\"><td>Net Benefit</td><td><strong>SAR ${netBenefit.toFixed(2)}</strong></td></tr>`;
+      html+='</table>';
+      document.getElementById('trade_output').innerHTML=html;
+    }
+    function clearFormTrade(){ 
+      ['cost1','mkt1','hold1','div1','mkt2','div2'].forEach(id=>document.getElementById(id).value=''); 
+      document.getElementById('trade_output').innerHTML=''; 
+    }
+  </script>
+</head>
+<body>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12 col-md-3 col-lg-3">
+      <div class="card mt-3">
+        <div class="card-header main-header"><i class="fas fa-bars"></i> Menu</div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><a href="gtm.html"><i class="fas fa-coins"></i> GTM</a></li>
+          <li class="list-group-item"><a href="stock-average.html"><i class="fas fa-chart-line"></i> Stock Average</a></li>
+          <li class="list-group-item"><a href="stock-average2.html"><i class="fas fa-calculator"></i> Stock Average 2</a></li>
+          <li class="list-group-item active"><a href="trade-calculator.html" class="text-dark"><i class="fas fa-exchange-alt"></i> Trade Calculator</a></li>
+          <li class="list-group-item"><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-12 col-md-9 col-lg-9">
+      <div class="section">
+        <div class="card mt-3"><div class="card-header">Trade Calculator (SAR)</div><div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <h5>Stock 1 (Portfolio)</h5>
+              <div class="form-group"><label for="cost1">Cost Price:</label><input class="form-control" id="cost1"></div>
+              <div class="form-group"><label for="mkt1">Market Price:</label><input class="form-control" id="mkt1"></div>
+              <div class="form-group"><label for="hold1">Shares Held:</label><input class="form-control" id="hold1"></div>
+              <div class="form-group"><label for="div1">Dividend per Share:</label><input class="form-control" id="div1"></div>
+            </div>
+            <div class="col-md-6">
+              <h5>Stock 2 (Target)</h5>
+              <div class="form-group"><label for="mkt2">Market Price:</label><input class="form-control" id="mkt2"></div>
+              <div class="form-group"><label for="div2">Dividend per Share:</label><input class="form-control" id="div2"></div>
+            </div>
+          </div>
+        </div><div class="card-footer">
+          <button class="btn btn-primary" onclick="calculateTrade()">Calculate</button>
+          <button class="btn btn-secondary" onclick="clearFormTrade()">Clear</button>
+        </div></div>
+        <div class="card mt-3"><div class="card-header">Results</div><div class="card-body"><div id="trade_output"></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

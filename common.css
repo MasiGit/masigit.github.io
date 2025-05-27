@@ -1,0 +1,8 @@
+.section {
+  margin-top: 1rem;
+}
+
+.card-header.main-header {
+  background-color: #17a2b8;
+  color: white;
+}
