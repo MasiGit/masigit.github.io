@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Trade Calculator (SAR)</title>
+<head>  <meta charset="UTF-8">
+  <title>Trade Calculator (USD)</title>
 
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="lib/css/bootstrap4.6.1.min.css">
@@ -22,10 +21,9 @@
   <!-- jQuery & Bootstrap JS -->
   <script src="lib/scripts/jquery.slim.min.js"></script>
   <script src="lib/scripts/bootstrap4.6.1.min.js"></script>
-
   <script>
     /****************************************
-     * TRADE CALCULATOR (SAR)
+     * TRADE CALCULATOR (USD)
      ****************************************/
     function calculateTrade(){
       const cost1=parseFloat(document.getElementById('cost1').value)||0;
@@ -34,26 +32,46 @@
       const div1=parseFloat(document.getElementById('div1').value)||0;
       const mkt2=parseFloat(document.getElementById('mkt2').value)||0;
       const div2=parseFloat(document.getElementById('div2').value)||0;
+      const expMkt1=parseFloat(document.getElementById('exp_mkt1').value)||0;
+      const expMkt2=parseFloat(document.getElementById('exp_mkt2').value)||0;
+      
+      // Current calculations
       const proceeds1=mkt1*hold1;
       const profitLoss1=(mkt1-cost1)*hold1;
       const totalDiv1=div1*hold1;
       const hold2=mkt2>0?proceeds1/mkt2:0;
       const totalDiv2=div2*hold2;
       const diffDiv=totalDiv2-totalDiv1;
-      const netBenefit=profitLoss1+diffDiv;
-      let html='<table class="table table-striped">';
-      html+=`<tr><td>Proceeds from Stock 1 sale</td><td>SAR ${proceeds1.toFixed(2)}</td></tr>`;
-      html+=`<tr><td>Realized P/L on Stock 1</td><td>SAR ${profitLoss1.toFixed(2)}</td></tr>`;
-      html+=`<tr><td>Expected Dividend from Stock 1</td><td>SAR ${totalDiv1.toFixed(2)}</td></tr>`;
+      
+      // Future value calculations
+      const futureValue1 = expMkt1 > 0 ? (expMkt1 * hold1) - proceeds1 : 0;
+      const futureValue2 = expMkt2 > 0 && hold2 > 0 ? (expMkt2 * hold2) - proceeds1 : 0;
+      const futureDiff = futureValue2 - futureValue1;
+      
+      // Total benefit including future price changes
+      const netBenefit = profitLoss1 + diffDiv + futureDiff;
+      
+      // Set color class based on positive/negative net benefit
+      const resultClass = netBenefit >= 0 ? 'text-success' : 'text-danger';
+        let html='<table class="table table-striped">';
+      html+=`<tr><td>Proceeds from Stock 1 sale</td><td>USD ${proceeds1.toFixed(2)}</td></tr>`;
+      html+=`<tr><td>Realized P/L on Stock 1</td><td>USD ${profitLoss1.toFixed(2)}</td></tr>`;
+      html+=`<tr><td>Expected Dividend from Stock 1</td><td>USD ${totalDiv1.toFixed(2)}</td></tr>`;
       html+=`<tr><td>Shares purchasable of Stock 2</td><td>${hold2.toFixed(2)}</td></tr>`;
-      html+=`<tr><td>Expected Dividend from Stock 2</td><td>SAR ${totalDiv2.toFixed(2)}</td></tr>`;
-      html+=`<tr><td>Difference in Dividends</td><td>SAR ${diffDiv.toFixed(2)}</td></tr>`;
-      html+=`<tr class=\"table-info\"><td>Net Benefit</td><td><strong>SAR ${netBenefit.toFixed(2)}</strong></td></tr>`;
+      html+=`<tr><td>Expected Dividend from Stock 2</td><td>USD ${totalDiv2.toFixed(2)}</td></tr>`;
+      html+=`<tr><td>Difference in Dividends</td><td>USD ${diffDiv.toFixed(2)}</td></tr>`;
+        // Add future price impact rows
+      html+=`<tr><td>Future value change of Stock 1 (if kept)</td><td>USD ${futureValue1.toFixed(2)}</td></tr>`;
+      html+=`<tr><td>Future value change of Stock 2 (if purchased)</td><td>USD ${futureValue2.toFixed(2)}</td></tr>`;
+      html+=`<tr><td>Net future value difference</td><td>USD ${futureDiff.toFixed(2)}</td></tr>`;
+      
+      html+=`<tr class="table-info"><td>Net Benefit</td><td><strong class="${resultClass}">USD ${netBenefit.toFixed(2)}</strong></td></tr>`;
       html+='</table>';
       document.getElementById('trade_output').innerHTML=html;
     }
+    
     function clearFormTrade(){ 
-      ['cost1','mkt1','hold1','div1','mkt2','div2'].forEach(id=>document.getElementById(id).value=''); 
+      ['cost1','mkt1','hold1','div1','mkt2','div2','exp_mkt1','exp_mkt2'].forEach(id=>document.getElementById(id).value=''); 
       document.getElementById('trade_output').innerHTML=''; 
     }
   </script>
@@ -75,18 +93,20 @@
     </div>
     <div class="col-12 col-md-9 col-lg-9">
       <div class="section">
-        <div class="card mt-3"><div class="card-header">Trade Calculator (SAR)</div><div class="card-body">
+        <div class="card mt-3"><div class="card-header">Trade Calculator (USD)</div><div class="card-body">
           <div class="row">
             <div class="col-md-6">
               <h5>Stock 1 (Portfolio)</h5>
               <div class="form-group"><label for="cost1">Cost Price:</label><input class="form-control" id="cost1"></div>
-              <div class="form-group"><label for="mkt1">Market Price:</label><input class="form-control" id="mkt1"></div>
+              <div class="form-group"><label for="mkt1">Current Market Price:</label><input class="form-control" id="mkt1"></div>
+              <div class="form-group"><label for="exp_mkt1">Expected Market Price (2-3 months):</label><input class="form-control" id="exp_mkt1"></div>
               <div class="form-group"><label for="hold1">Shares Held:</label><input class="form-control" id="hold1"></div>
               <div class="form-group"><label for="div1">Dividend per Share:</label><input class="form-control" id="div1"></div>
             </div>
             <div class="col-md-6">
               <h5>Stock 2 (Target)</h5>
-              <div class="form-group"><label for="mkt2">Market Price:</label><input class="form-control" id="mkt2"></div>
+              <div class="form-group"><label for="mkt2">Current Market Price:</label><input class="form-control" id="mkt2"></div>
+              <div class="form-group"><label for="exp_mkt2">Expected Market Price (2-3 months):</label><input class="form-control" id="exp_mkt2"></div>
               <div class="form-group"><label for="div2">Dividend per Share:</label><input class="form-control" id="div2"></div>
             </div>
           </div>
