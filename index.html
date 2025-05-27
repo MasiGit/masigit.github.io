@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>GTM & Stock Average App (USD) with StockAverageSection2 Highlight</title>
+  <title>GTM & Stock Average App (USD & SAR with Trade)</title>
 
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="lib/css/bootstrap4.6.1.min.css">
@@ -25,12 +25,10 @@
      * Toggle Which Section is Shown
      ****************************************/
     function showSection(sectionID) {
-      // Hide all possible sections
       document.getElementById("gtmSection").style.display = "none";
       document.getElementById("stockAverageSection").style.display = "none";
       document.getElementById("stockAverageSection2").style.display = "none";
-
-      // Show the requested section
+      document.getElementById("tradeSection").style.display = "none";
       document.getElementById(sectionID).style.display = "block";
     }
 
@@ -38,45 +36,26 @@
      * 1) GOLD TO CURRENCY (GTM) - Using USD
      ****************************************/
     function calcluate(){
-      const usd_amount_to_send   = parseFloat(document.getElementById('usd_amount_to_send').value);
-      const usd_to_inr           = parseFloat(document.getElementById('usd_to_inr').value);
-      const gold_rate_10g_usd    = parseFloat(document.getElementById('gold_rate_10g_usd').value);
+      const usd_amount_to_send    = parseFloat(document.getElementById('usd_amount_to_send').value);
+      const usd_to_inr            = parseFloat(document.getElementById('usd_to_inr').value);
+      const gold_rate_10g_usd     = parseFloat(document.getElementById('gold_rate_10g_usd').value);
       const gold_rate_10g_ind_inr = parseFloat(document.getElementById('gold_rate_10g_ind_inr').value);
-
-      if (
-        isNaN(usd_amount_to_send) || 
-        isNaN(usd_to_inr) ||
-        isNaN(gold_rate_10g_usd) || 
-        isNaN(gold_rate_10g_ind_inr)
-      ){
-        alert('Please provide valid input (USD).');
-        return;
+      if (isNaN(usd_amount_to_send) || isNaN(usd_to_inr) || isNaN(gold_rate_10g_usd) || isNaN(gold_rate_10g_ind_inr)){
+        alert('Please provide valid input (USD).'); return;
       }
-
-      // Gold capacity based on the USD amount
-      const gold_weight = (usd_amount_to_send / gold_rate_10g_usd).toFixed(2);
-      
-      // Value in INR if that gold was purchased in India
-      const purchased_gold_value_inr = gold_weight * gold_rate_10g_ind_inr;
-      
-      // If you simply exchanged USD to INR
+      const gold_weight           = (usd_amount_to_send / gold_rate_10g_usd).toFixed(2);
+      const purchased_gold_value  = gold_weight * gold_rate_10g_ind_inr;
       const exchanged_amount_in_inr = usd_amount_to_send * usd_to_inr;
-
       let output = '<table class="table table-striped">';
-      output += '<tr><td>Gold purchase capacity (units of 10g)</td><td>'+ gold_weight +'</td></tr>';
-      output += '<tr><td>Gold Purchased Value in India (INR)</td><td>'+ purchased_gold_value_inr +'</td></tr>';
-      output += '<tr><td>USD Sent Amount Value (INR)</td><td>'+ exchanged_amount_in_inr +'</td></tr>';
-      output += '<tr><td>Difference</td><td>'+(purchased_gold_value_inr - exchanged_amount_in_inr)+'</td></tr>';
+      output += '<tr><td>Gold purchase capacity (10g units)</td><td>'+ gold_weight +'</td></tr>';
+      output += '<tr><td>Gold value in INR</td><td>'+ purchased_gold_value +'</td></tr>';
+      output += '<tr><td>Exchanged INR amount</td><td>'+ exchanged_amount_in_inr +'</td></tr>';
+      output += '<tr><td>Difference</td><td>'+(purchased_gold_value - exchanged_amount_in_inr)+'</td></tr>';
       output += '</table>';
-
       document.getElementById("output").innerHTML = output;
     }
-
     function clearFormGTM(){
-      document.getElementById('usd_amount_to_send').value   = '';
-      document.getElementById('usd_to_inr').value           = '';
-      document.getElementById('gold_rate_10g_usd').value    = '';
-      document.getElementById('gold_rate_10g_ind_inr').value = '';
+      ['usd_amount_to_send','usd_to_inr','gold_rate_10g_usd','gold_rate_10g_ind_inr'].forEach(id=>document.getElementById(id).value='');
       document.getElementById("output").innerHTML = '';
     }
 
@@ -88,459 +67,204 @@
       const quantity_held = parseFloat(document.getElementById('quantity_held').value);
       const market_price  = parseFloat(document.getElementById('market_price').value);
       const new_shares    = parseFloat(document.getElementById('new_shares').value);
-
-      if (
-        isNaN(cost_price) || 
-        isNaN(quantity_held) ||
-        isNaN(market_price) ||
-        isNaN(new_shares)
-      ) {
-        alert("Please provide valid input in Stock Average form.");
-        return;
+      if (isNaN(cost_price)||isNaN(quantity_held)||isNaN(market_price)||isNaN(new_shares)){
+        alert('Please provide valid input in Stock Average form.'); return;
       }
-
       const cost_value       = cost_price * quantity_held;
       const new_shares_value = market_price * new_shares;
-      const total_cost_value = cost_value + new_shares_value;
+      const total_cost       = cost_value + new_shares_value;
       const total_shares     = quantity_held + new_shares;
-      const new_avg          = (total_cost_value / total_shares).toFixed(2);
-
-      let resultTable = `
-        <table class="table table-striped">
-          <tr><td>Cost Price</td><td>${cost_price}</td></tr>
-          <tr><td>Quantity Held</td><td>${quantity_held}</td></tr>
-          <tr><td>Market Price</td><td>${market_price}</td></tr>
-          <tr><td>New Shares</td><td>${new_shares}</td></tr>
-          <tr class="table-info">
-            <td>New Average Price</td>
-            <td><strong>${new_avg}</strong></td>
-          </tr>
-        </table>
-      `;
-
-      document.getElementById("avg_output").innerHTML = resultTable;
+      const new_avg          = (total_cost/total_shares).toFixed(2);
+      let html = '<table class="table table-striped">';
+      html += `<tr><td>Cost Price</td><td>${cost_price}</td></tr>`;
+      html += `<tr><td>Quantity Held</td><td>${quantity_held}</td></tr>`;
+      html += `<tr><td>Market Price</td><td>${market_price}</td></tr>`;
+      html += `<tr><td>New Shares</td><td>${new_shares}</td></tr>`;
+      html += `<tr class=\"table-info\"><td>New Average Price</td><td><strong>${new_avg}</strong></td></tr>`;
+      html += '</table>';
+      document.getElementById('avg_output').innerHTML = html;
     }
-
     function clearFormStock(){
-      document.getElementById('cost_price').value     = '';
-      document.getElementById('quantity_held').value  = '';
-      document.getElementById('market_price').value   = '';
-      document.getElementById('new_shares').value     = '';
-      document.getElementById("avg_output").innerHTML = '';
+      ['cost_price','quantity_held','market_price','new_shares'].forEach(id=>document.getElementById(id).value='');
+      document.getElementById('avg_output').innerHTML='';
     }
 
     /****************************************
      * 3) STOCK AVERAGE SECTION 2 (New)
-     *    6 inputs:
-     *      cost_price2
-     *      quantity_held2
-     *      market_price2
-     *      new_average_price2
-     *      new_shares2
-     *      total_new_investment2
-     *
-     *    Fill exactly 4 independent fields from the following:
-     *    Cost Price, Quantity Held, Market Price, New Average Price,
-     *    and one of (New Shares or Total New Investment).
-     *
-     *    The missing field will be computed and highlighted.
-     *
-     *    When New Shares is provided, Total New Investment is computed as:
-     *         Market Price × New Shares.
-     *
-     *    When Total New Investment is provided, New Shares is computed as:
-     *         round(Total New Investment / Market Price).
      ****************************************/
     function calculateNewAverage2(){
-      // Parse the values from the form
-      let cost_price      = parseFloat(document.getElementById('cost_price2').value);
-      let quantity_held   = parseFloat(document.getElementById('quantity_held2').value);
-      let market_price    = parseFloat(document.getElementById('market_price2').value);
-      let new_avg_price   = parseFloat(document.getElementById('new_average_price2').value);
-      let new_shares      = parseFloat(document.getElementById('new_shares2').value);
+      let cost_price = parseFloat(document.getElementById('cost_price2').value);
+      let quantity_held = parseFloat(document.getElementById('quantity_held2').value);
+      let market_price = parseFloat(document.getElementById('market_price2').value);
+      let new_avg_price = parseFloat(document.getElementById('new_average_price2').value);
+      let new_shares = parseFloat(document.getElementById('new_shares2').value);
       let total_new_investment = parseFloat(document.getElementById('total_new_investment2').value);
-
-      // --- Step 1: Process the dependent pair (New Shares & Total New Investment) ---
-      // Exactly one must be provided.
-      let pairProvided = "";
-      if (!isNaN(new_shares) && isNaN(total_new_investment)) {
-        pairProvided = "new_shares";
-        if (isNaN(market_price) || market_price === 0) {
-          alert("Market Price is required and cannot be zero to compute Total New Investment.");
-          return;
-        }
-        // Automatically compute Total New Investment
-        total_new_investment = parseFloat((new_shares * market_price).toFixed(2));
-      } else if (isNaN(new_shares) && !isNaN(total_new_investment)) {
-        pairProvided = "total_new_investment";
-        if (isNaN(market_price) || market_price === 0) {
-          alert("Market Price is required and cannot be zero to compute New Shares.");
-          return;
-        }
-        // Automatically compute New Shares (using integer rounding)
-        new_shares = Math.round(total_new_investment / market_price);
-        // Update Total New Investment based on the rounded New Shares
-        total_new_investment = parseFloat((new_shares * market_price).toFixed(2));
-      } else if (!isNaN(new_shares) && !isNaN(total_new_investment)) {
-        alert("Please provide only one of New Shares or Total New Investment, not both.");
-        return;
-      } else {
-        alert("Please provide either New Shares or Total New Investment.");
-        return;
+      let pairProvided='';
+      if(!isNaN(new_shares)&&isNaN(total_new_investment)){
+        pairProvided='new_shares';
+        if(isNaN(market_price)||market_price===0){alert('Market Price required');return;}
+        total_new_investment = parseFloat((new_shares*market_price).toFixed(2));
+      }else if(isNaN(new_shares)&&!isNaN(total_new_investment)){
+        pairProvided='total_new_investment';
+        if(isNaN(market_price)||market_price===0){alert('Market Price required');return;}
+        new_shares = Math.round(total_new_investment/market_price);
+        total_new_investment = parseFloat((new_shares*market_price).toFixed(2));
+      }else{alert('Provide exactly one of New Shares or Total New Investment');return;}
+      let count=0; if(!isNaN(cost_price))count++; if(!isNaN(quantity_held))count++; if(!isNaN(market_price))count++; if(!isNaN(new_avg_price))count++;
+      if(count!==3){alert('Fill exactly 3 of Cost Price, Quantity Held, Market Price, New Average Price');return;}
+      let missingVar='';
+      if(isNaN(cost_price)) missingVar='cost_price';
+      else if(isNaN(quantity_held)) missingVar='quantity_held';
+      else if(isNaN(market_price)) missingVar='market_price';
+      else if(isNaN(new_avg_price)) missingVar='new_avg_price';
+      switch(missingVar){
+        case 'cost_price': cost_price = parseFloat(((new_avg_price*(quantity_held+new_shares)-market_price*new_shares)/quantity_held).toFixed(2)); break;
+        case 'quantity_held': quantity_held = parseFloat(((new_shares*(market_price-new_avg_price))/(new_avg_price-cost_price)).toFixed(2)); break;
+        case 'market_price': market_price = parseFloat(((new_avg_price*(quantity_held+new_shares)-cost_price*quantity_held)/new_shares).toFixed(2));
+          if(pairProvided==='new_shares') total_new_investment=parseFloat((new_shares*market_price).toFixed(2));
+          else if(pairProvided==='total_new_investment'){ new_shares=Math.round(total_new_investment/market_price); total_new_investment=parseFloat((new_shares*market_price).toFixed(2)); }
+          break;
+        case 'new_avg_price': new_avg_price = parseFloat(((cost_price*quantity_held)+(market_price*new_shares))/(quantity_held+new_shares).toFixed(2)); break;
       }
-
-      // --- Step 2: Process the other independent fields ---
-      // These are: cost_price, quantity_held, market_price, new_avg_price.
-      // Exactly 3 of these 4 must be provided.
-      let count = 0;
-      if (!isNaN(cost_price)) count++;
-      if (!isNaN(quantity_held)) count++;
-      if (!isNaN(market_price)) count++;
-      if (!isNaN(new_avg_price)) count++;
-      if (count !== 3) {
-        alert("Please fill exactly 3 fields among Cost Price, Quantity Held, Market Price, and New Average Price.");
-        return;
-      }
-      
-      let missingVar = "";
-      if (isNaN(cost_price)) missingVar = "cost_price";
-      else if (isNaN(quantity_held)) missingVar = "quantity_held";
-      else if (isNaN(market_price)) missingVar = "market_price";
-      else if (isNaN(new_avg_price)) missingVar = "new_avg_price";
-      
-      // --- Step 3: Compute the missing independent field using the weighted average formula ---
-      // Standard formula:
-      //    total_cost = (cost_price × quantity_held) + (market_price × new_shares)
-      //    total_shares = quantity_held + new_shares
-      //    new_avg_price = total_cost / total_shares
-      switch(missingVar) {
-        case "cost_price":
-          if (quantity_held === 0) {
-            alert("Quantity Held cannot be zero.");
-            return;
-          }
-          cost_price = (new_avg_price * (quantity_held + new_shares) - market_price * new_shares) / quantity_held;
-          cost_price = parseFloat(cost_price.toFixed(2));
-          break;
-        case "quantity_held":
-          if ((new_avg_price - cost_price) === 0) {
-            alert("Invalid input values: division by zero.");
-            return;
-          }
-          quantity_held = (new_shares * (market_price - new_avg_price)) / (new_avg_price - cost_price);
-          quantity_held = parseFloat(quantity_held.toFixed(2));
-          break;
-        case "market_price":
-          if (new_shares === 0) {
-            alert("New Shares cannot be zero.");
-            return;
-          }
-          market_price = (new_avg_price * (quantity_held + new_shares) - cost_price * quantity_held) / new_shares;
-          market_price = parseFloat(market_price.toFixed(2));
-          // Update the dependent pair accordingly
-          if (pairProvided === "new_shares") {
-             total_new_investment = parseFloat((new_shares * market_price).toFixed(2));
-          } else if (pairProvided === "total_new_investment") {
-             new_shares = Math.round(total_new_investment / market_price);
-             total_new_investment = parseFloat((new_shares * market_price).toFixed(2));
-          }
-          break;
-        case "new_avg_price":
-          if ((quantity_held + new_shares) === 0) {
-            alert("Total shares cannot be zero.");
-            return;
-          }
-          new_avg_price = ((cost_price * quantity_held) + (market_price * new_shares)) / (quantity_held + new_shares);
-          new_avg_price = parseFloat(new_avg_price.toFixed(2));
-          break;
-      }
-      
-      // --- Step 4: Build the result table with highlighting for the computed field ---
-      // For the dependent pair, highlight the computed value.
-      const rowClass_costPrice    = missingVar === "cost_price"         ? "table-info" : "";
-      const rowClass_quantityHeld = missingVar === "quantity_held"      ? "table-info" : "";
-      const rowClass_marketPrice  = missingVar === "market_price"       ? "table-info" : "";
-      const rowClass_newAvg       = missingVar === "new_avg_price"      ? "table-info" : "";
-      // For the dependent pair, highlight whichever was computed:
-      const rowClass_newShares    = pairProvided === "total_new_investment" ? "table-info" : "";
-      const rowClass_totalNewInv  = pairProvided === "new_shares"         ? "table-info" : "";
-      
-      let output2 = `
-        <table class="table table-striped">
-          <tr class="${rowClass_costPrice}">
-            <td>Cost Price</td>
-            <td>${cost_price || 0}</td>
-          </tr>
-          <tr class="${rowClass_quantityHeld}">
-            <td>Quantity Held</td>
-            <td>${quantity_held || 0}</td>
-          </tr>
-          <tr class="${rowClass_marketPrice}">
-            <td>Market Price</td>
-            <td>${market_price || 0}</td>
-          </tr>
-          <tr class="${rowClass_newShares}">
-            <td>New Shares</td>
-            <td>${new_shares || 0}</td>
-          </tr>
-          <tr class="${rowClass_newAvg}">
-            <td>New Average Price</td>
-            <td><strong>${new_avg_price || 0}</strong></td>
-          </tr>
-          <tr class="${rowClass_totalNewInv}">
-            <td>Total New Investment</td>
-            <td>${total_new_investment || 0}</td>
-          </tr>
-        </table>
-      `;
-      
-      document.getElementById("avg_output2").innerHTML = output2;
+      const clsCost    = missingVar==='cost_price'?'table-info':'';
+      const clsQty     = missingVar==='quantity_held'?'table-info':'';
+      const clsMkt     = missingVar==='market_price'?'table-info':'';
+      const clsAvg     = missingVar==='new_avg_price'?'table-info':'';
+      const clsShares  = pairProvided==='total_new_investment'?'table-info':'';
+      const clsTotal   = pairProvided==='new_shares'?'table-info':'';
+      let out2 = `<table class="table table-striped">
+        <tr class="${clsCost}"><td>Cost Price</td><td>${cost_price||0}</td></tr>
+        <tr class="${clsQty}"><td>Quantity Held</td><td>${quantity_held||0}</td></tr>
+        <tr class="${clsMkt}"><td>Market Price</td><td>${market_price||0}</td></tr>
+        <tr class="${clsShares}"><td>New Shares</td><td>${new_shares||0}</td></tr>
+        <tr class="${clsAvg}"><td>New Average Price</td><td><strong>${new_avg_price||0}</strong></td></tr>
+        <tr class="${clsTotal}"><td>Total New Investment</td><td>${total_new_investment||0}</td></tr>
+      </table>`;
+      document.getElementById('avg_output2').innerHTML = out2;
     }
+    function clearFormStock2(){ ['cost_price2','quantity_held2','market_price2','new_average_price2','new_shares2','total_new_investment2'].forEach(id=>document.getElementById(id).value=''); document.getElementById('avg_output2').innerHTML=''; }
 
-    function clearFormStock2(){
-      document.getElementById('cost_price2').value         = '';
-      document.getElementById('quantity_held2').value      = '';
-      document.getElementById('market_price2').value       = '';
-      document.getElementById('new_average_price2').value  = '';
-      document.getElementById('new_shares2').value         = '';
-      document.getElementById('total_new_investment2').value = '';
-      document.getElementById("avg_output2").innerHTML     = '';
+    /****************************************
+     * 4) TRADE CALCULATOR (SAR)
+     ****************************************/
+    function calculateTrade(){
+      const cost1=parseFloat(document.getElementById('cost1').value)||0;
+      const mkt1=parseFloat(document.getElementById('mkt1').value)||0;
+      const hold1=parseFloat(document.getElementById('hold1').value)||0;
+      const div1=parseFloat(document.getElementById('div1').value)||0;
+      const mkt2=parseFloat(document.getElementById('mkt2').value)||0;
+      const div2=parseFloat(document.getElementById('div2').value)||0;
+      const proceeds1=mkt1*hold1;
+      const profitLoss1=(mkt1-cost1)*hold1;
+      const totalDiv1=div1*hold1;
+      const hold2=mkt2>0?proceeds1/mkt2:0;
+      const totalDiv2=div2*hold2;
+      const diffDiv=totalDiv2-totalDiv1;
+      const netBenefit=profitLoss1+diffDiv;
+      let html='<table class="table table-striped">';
+      html+=`<tr><td>Proceeds from Stock 1 sale</td><td>SAR ${proceeds1.toFixed(2)}</td></tr>`;
+      html+=`<tr><td>Realized P/L on Stock 1</td><td>SAR ${profitLoss1.toFixed(2)}</td></tr>`;
+      html+=`<tr><td>Expected Dividend from Stock 1</td><td>SAR ${totalDiv1.toFixed(2)}</td></tr>`;
+      html+=`<tr><td>Shares purchasable of Stock 2</td><td>${hold2.toFixed(2)}</td></tr>`;
+      html+=`<tr><td>Expected Dividend from Stock 2</td><td>SAR ${totalDiv2.toFixed(2)}</td></tr>`;
+      html+=`<tr><td>Difference in Dividends</td><td>SAR ${diffDiv.toFixed(2)}</td></tr>`;
+      html+=`<tr class=\"table-info\"><td>Net Benefit</td><td><strong>SAR ${netBenefit.toFixed(2)}</strong></td></tr>`;
+      html+='</table>';
+      document.getElementById('trade_output').innerHTML=html;
     }
+    function clearFormTrade(){ ['cost1','mkt1','hold1','div1','mkt2','div2'].forEach(id=>document.getElementById(id).value=''); document.getElementById('trade_output').innerHTML=''; }
 
-    // Show GTM section by default on page load
-    document.addEventListener('DOMContentLoaded', function(){
-      showSection("gtmSection"); 
-    });
+    document.addEventListener('DOMContentLoaded',()=>showSection('gtmSection'));
   </script>
 
   <style>
-    /* Let Bootstrap handle responsiveness; no pinned/fixed menu here. */
     #gtmSection,
     #stockAverageSection,
-    #stockAverageSection2 {
+    #stockAverageSection2,
+    #tradeSection {
       margin-top: 1rem;
     }
   </style>
 </head>
 <body>
-
 <div class="container-fluid">
   <div class="row">
-    
-    <!-- LEFT COLUMN: MENU -->
     <div class="col-12 col-md-3 col-lg-3">
       <div class="card mt-3">
-        <div class="card-header bg-info text-white">
-          <i class="fas fa-bars"></i> Menu
-        </div>
+        <div class="card-header bg-info text-white"><i class="fas fa-bars"></i> Menu</div>
         <ul class="list-group list-group-flush">
-          <li class="list-group-item">
-            <a href="javascript:void(0)" class="text-decoration-none" onclick="showSection('gtmSection')">
-              <i class="fas fa-coins"></i> GTM
-            </a>
-          </li>
-          <li class="list-group-item">
-            <a href="javascript:void(0)" class="text-decoration-none" onclick="showSection('stockAverageSection')">
-              <i class="fas fa-chart-line"></i> Stock Average
-            </a>
-          </li>
-          <li class="list-group-item">
-            <a href="javascript:void(0)" class="text-decoration-none" onclick="showSection('stockAverageSection2')">
-              <i class="fas fa-calculator"></i> Stock Average 2
-            </a>
-          </li>
+          <li class="list-group-item"><a href="#" onclick="showSection('gtmSection')"><i class="fas fa-coins"></i> GTM</a></li>
+          <li class="list-group-item"><a href="#" onclick="showSection('stockAverageSection')"><i class="fas fa-chart-line"></i> Stock Average</a></li>
+          <li class="list-group-item"><a href="#" onclick="showSection('stockAverageSection2')"><i class="fas fa-calculator"></i> Stock Average 2</a></li>
+          <li class="list-group-item"><a href="#" onclick="showSection('tradeSection')"><i class="fas fa-exchange-alt"></i> Trade Calculator</a></li>
         </ul>
       </div>
     </div>
-    <!-- END MENU COLUMN -->
-
-    <!-- RIGHT COLUMN: MAIN CONTENT -->
     <div class="col-12 col-md-9 col-lg-9">
-      
-      <!-- 1) GTM Section (Uses USD) -->
       <div id="gtmSection">
-        <!-- GTM Card -->
-        <div class="card mt-3">
-          <div class="card-header">
-            GTM (USD)
-          </div>
-          <div class="card-body">
-            <div class="row">
-              <div class="col-3">&nbsp;</div>
-              <div class="col-6">
-                
-                <div class="form-group row">
-                  <label for="usd_to_inr">USD-INR:</label>
-                  <input type="text" class="form-control" id="usd_to_inr">
-                </div>
-                
-                <div class="form-group row">
-                  <label for="usd_amount_to_send">Amount to Send (USD):</label>
-                  <input type="text" class="form-control" id="usd_amount_to_send">
-                </div>
-                
-                <div class="form-group row">
-                  <label for="gold_rate_10g_usd">Gold Rate 10g (USD):</label>
-                  <input type="text" class="form-control" id="gold_rate_10g_usd">
-                </div>
-                
-                <div class="form-group row">
-                  <label for="gold_rate_10g_ind_inr">Gold Rate 10g (INR):</label>
-                  <input type="text" class="form-control" id="gold_rate_10g_ind_inr">
-                </div>
-
-              </div>
-              <div class="col-3">&nbsp;</div>
-            </div>
-          </div>
-          <div class="card-footer">
-            <button type="button" class="btn btn-primary" onclick="calcluate()">Submit</button>
-            <button type="button" class="btn btn-secondary" onclick="clearFormGTM()">Clear</button>
-          </div>
-        </div>
-
-        <!-- GTM Result Card -->
-        <div class="card mt-3">
-          <div class="card-header">Result</div>
-          <div class="card-body">
-            <div class="row">
-              <div class="col-3">&nbsp;</div>
-              <div class="col-6">
-                <div id="output"></div>
-              </div>
-              <div class="col-3">&nbsp;</div>
-            </div>
-          </div>
-        </div>
+        <div class="card mt-3"><div class="card-header">GTM (USD)</div><div class="card-body">
+          <div class="form-group"><label for="usd_to_inr">USD-INR:</label><input class="form-control" id="usd_to_inr"></div>
+          <div class="form-group"><label for="usd_amount_to_send">Amount to Send (USD):</label><input class="form-control" id="usd_amount_to_send"></div>
+          <div class="form-group"><label for="gold_rate_10g_usd">Gold Rate 10g (USD):</label><input class="form-control" id="gold_rate_10g_usd"></div>
+          <div class="form-group"><label for="gold_rate_10g_ind_inr">Gold Rate 10g (INR):</label><input class="form-control" id="gold_rate_10g_ind_inr"></div>
+        </div><div class="card-footer">
+          <button class="btn btn-primary" onclick="calcluate()">Submit</button>
+          <button class="btn btn-secondary" onclick="clearFormGTM()">Clear</button>
+        </div></div>
+        <div class="card mt-3"><div class="card-header">Result</div><div class="card-body"><div id="output"></div></div></div>
       </div>
-      <!-- End GTM Section -->
-
-      <!-- 2) Stock Average Section (Original, Unchanged) -->
-      <div id="stockAverageSection" style="display: none;">
-        <!-- Stock Average Card -->
-        <div class="card mt-3">
-          <div class="card-header">
-            Stock Average
-          </div>
-          <div class="card-body">
-            <div class="row">
-              <div class="col-3">&nbsp;</div>
-              <div class="col-6">
-                
-                <div class="form-group row">
-                  <label for="cost_price">Cost Price:</label>
-                  <input type="text" class="form-control" id="cost_price">
-                </div>
-                
-                <div class="form-group row">
-                  <label for="quantity_held">Quantity Held:</label>
-                  <input type="text" class="form-control" id="quantity_held">
-                </div>
-                
-                <div class="form-group row">
-                  <label for="market_price">Market Price:</label>
-                  <input type="text" class="form-control" id="market_price">
-                </div>
-                
-                <div class="form-group row">
-                  <label for="new_shares">New Shares to Buy:</label>
-                  <input type="text" class="form-control" id="new_shares">
-                </div>
-
-              </div>
-              <div class="col-3">&nbsp;</div>
-            </div>
-          </div>
-          <div class="card-footer">
-            <button type="button" class="btn btn-primary" onclick="calculateNewAverage()">Submit</button>
-            <button type="button" class="btn btn-secondary" onclick="clearFormStock()">Clear</button>
-          </div>
-        </div>
-
-        <!-- Stock Average Result Card -->
-        <div class="card mt-3">
-          <div class="card-header">Stock Average Result</div>
-          <div class="card-body">
-            <div class="row">
-              <div class="col-3">&nbsp;</div>
-              <div class="col-6">
-                <div id="avg_output"></div>
-              </div>
-              <div class="col-3">&nbsp;</div>
-            </div>
-          </div>
-        </div>
+      <div id="stockAverageSection" style="display:none;">
+        <div class="card mt-3"><div class="card-header">Stock Average</div><div class="card-body">
+          <div class="form-group"><label for="cost_price">Cost Price:</label><input class="form-control" id="cost_price"></div>
+          <div class="form-group"><label for="quantity_held">Quantity Held:</label><input class="form-control" id="quantity_held"></div>
+          <div class="form-group"><label for="market_price">Market Price:</label><input class="form-control" id="market_price"></div>
+          <div class="form-group"><label for="new_shares">New Shares to Buy:</label><input class="form-control" id="new_shares"></div>
+        </div><div class="card-footer">
+          <button class="btn btn-primary" onclick="calculateNewAverage()">Submit</button>
+          <button class="btn btn-secondary" onclick="clearFormStock()">Clear</button>
+        </div></div>
+        <div class="card mt-3"><div class="card-header">Stock Average Result</div><div class="card-body"><div id="avg_output"></div></div></div>
       </div>
-      <!-- End Original Stock Average Section -->
-
-      <!-- 3) Stock Average Section 2 (New) -->
-      <div id="stockAverageSection2" style="display: none;">
+      <div id="stockAverageSection2" style="display:none;">
         <div class="row">
-          <!-- Inputs Column -->
-          <div class="col-md-6">
-            <div class="card mt-3">
-              <div class="card-header">
-                Stock Average 2 - Inputs
-              </div>
-              <div class="card-body">
-                <p class="text-muted">
-                  Fill exactly <strong>4</strong> independent fields from the following:
-                  Cost Price, Quantity Held, Market Price, New Average Price, and one of (New Shares or Total New Investment).
-                  The missing field will be computed and highlighted.
-                </p>
-                <div class="form-group">
-                  <label for="cost_price2">Cost Price:</label>
-                  <input type="text" class="form-control" id="cost_price2">
-                </div>
-                <div class="form-group">
-                  <label for="quantity_held2">Quantity Held:</label>
-                  <input type="text" class="form-control" id="quantity_held2">
-                </div>
-                <div class="form-group">
-                  <label for="market_price2">Market Price:</label>
-                  <input type="text" class="form-control" id="market_price2">
-                </div>
-                <div class="form-group">
-                  <label for="new_average_price2">New Average Price:</label>
-                  <input type="text" class="form-control" id="new_average_price2">
-                </div>
-                <!-- New Shares and Total New Investment on the same row with an "Or" between -->
-                <div class="form-group row">
-                  <div class="col-md-5">
-                    <label for="new_shares2">New Shares:</label>
-                    <input type="text" class="form-control" id="new_shares2">
-                  </div>
-                  <div class="col-md-2 d-flex align-items-center justify-content-center">
-                    <span>Or</span>
-                  </div>
-                  <div class="col-md-5">
-                    <label for="total_new_investment2">Total New Investment:</label>
-                    <input type="text" class="form-control" id="total_new_investment2">
-                  </div>
-                </div>
-              </div>
-              <div class="card-footer">
-                <button type="button" class="btn btn-primary" onclick="calculateNewAverage2()">Calculate</button>
-                <button type="button" class="btn btn-secondary" onclick="clearFormStock2()">Clear</button>
-              </div>
-            </div>
-          </div>
-          <!-- Result Column -->
-          <div class="col-md-6">
-            <div class="card mt-3">
-              <div class="card-header">Stock Average 2 Result</div>
-              <div class="card-body">
-                <div id="avg_output2"></div>
-              </div>
-            </div>
-          </div>
+          <div class="col-md-6"><div class="card mt-3"><div class="card-header">Stock Average 2 - Inputs</div><div class="card-body">
+            <p class="text-muted">Fill exactly <strong>4</strong> fields among Cost Price, Quantity Held,
+            Market Price, New Avg Price, and one of New Shares or Total New Investment.</p>
+            <div class="form-group"><label for="cost_price2">Cost Price:</label><input class="form-control" id="cost_price2"></div>
+            <div class="form-group"><label for="quantity_held2">Quantity Held:</label><input class="form-control" id="quantity_held2"></div>
+            <div class="form-group"><label for="market_price2">Market Price:</label><input class="form-control" id="market_price2"></div>
+            <div class="form-group"><label for="new_average_price2">New Average Price:</label><input class="form-control" id="new_average_price2"></div>
+            <div class="form-group row"><div class="col-md-5"><label for="new_shares2">New Shares:</label><input class="form-control" id="new_shares2"></div>
+            <div class="col-md-2 d-flex align-items-center justify-content-center">Or</div>
+            <div class="col-md-5"><label for="total_new_investment2">Total New Investment:</label><input class="form-control" id="total_new_investment2"></div></div>
+          </div><div class="card-footer"><button class="btn btn-primary" onclick="calculateNewAverage2()">Calculate</button>
+            <button class="btn btn-secondary" onclick="clearFormStock2()">Clear</button></div></div></div>
+          <div class="col-md-6"><div class="card mt-3"><div class="card-header">Stock Average 2 Result</div>
+            <div class="card-body"><div id="avg_output2"></div></div></div></div>
         </div>
       </div>
-      <!-- End Stock Average Section 2 -->
+      <div id="tradeSection" style="display:none;">
+        <div class="card mt-3"><div class="card-header">Trade Calculator (SAR)</div><div class="card-body">
+          <div class="row">
+            <div class="col-md-6"><h5>Stock 1 (Portfolio)</h5>
+              <div class="form-group"><label for="cost1">Cost Price (SAR):</label><input class="form-control" type="number" step="0.01" id="cost1"></div>
+              <div class="form-group"><label for="mkt1">Market Price (SAR):</label><input class="form-control" type="number" step="0.01" id="mkt1"></div>
+              <div class="form-group"><label for="hold1">Holdings (shares):</label><input class="form-control" type="number" step="1" id="hold1"></div>
+              <div class="form-group"><label for="div1">Dividend/share (SAR):</label><input class="form-control" type="number" step="0.01" id="div1"></div>
+            </div>
+            <div class="col-md-6"><h5>Stock 2 (Buy)</h5>
+              <div class="form-group"><label for="mkt2">Market Price (SAR):</label><input class="form-control" type="number" step="0.01" id="mkt2"></div>
+              <div class="form-group"><label for="div2">Dividend/share (SAR):</label><input class="form-control" type="number" step="0.01" id="div2"></div>
+            </div>
+          </div>
+        </div><div class="card-footer">
+          <button class="btn btn-primary" onclick="calculateTrade()">Calculate</button>
+          <button class="btn btn-secondary" onclick="clearFormTrade()">Clear</button>
+        </div></div>
+        <div class="card mt-3"><div class="card-header">Results</div><div class="card-body"><div id="trade_output"></div></div></div>
+      </div>
     </div>
-    <!-- End Right Column -->
   </div>
 </div>
-
 </body>
 </html>
