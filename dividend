@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Dividends • Current vs Target (2024)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+  <!-- Repo styles/scripts -->
+  <link rel="stylesheet" href="lib/css/bootstrap.min.css">
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .page-title{font-size:1.25rem;margin:0}
+    .subtle{color:#6c757d}
+    .card-lite{border:1px solid rgba(0,0,0,.08);border-radius:.5rem}
+    .form-note{font-size:.875rem}
+    .table thead th{position:sticky;top:0;background:#fff;z-index:2}
+    .badge-note{font-size:.8rem}
+    .cell-dash{color:#adb5bd}
+    .mini{font-size:.85rem}
+    .totals-grid{display:grid;grid-template-columns:repeat(4,minmax(140px,1fr));gap:10px}
+    .totcard{border:1px solid rgba(0,0,0,.08);border-radius:.5rem;padding:10px}
+    .totcard h3{font-size:.95rem;margin:0 0 6px 0}
+    .fw-600{font-weight:600}
+    .code{font-family: ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
+  </style>
+</head>
+<body>
+
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Left menu -->
+      <nav class="col-12 col-md-3 col-lg-2 py-3 border-end">
+        <div class="h5 mb-3">Menu</div>
+        <ul class="nav flex-column small">
+          <li class="nav-item"><a class="nav-link px-0" href="gtm.html">GTM</a></li>
+          <li class="nav-item"><a class="nav-link px-0" href="stock-average.html">Stock Average</a></li>
+          <li class="nav-item"><a class="nav-link px-0" href="stock-average2.html">Stock Average 2</a></li>
+          <li class="nav-item"><a class="nav-link px-0" href="trade-calculator.html">Trade Calculator</a></li>
+          <li class="nav-item"><a class="nav-link px-0" href="dividends.html">Dividends</a></li>
+          <li class="nav-item"><a class="nav-link px-0" href="index.html">Home</a></li>
+        </ul>
+      </nav>
+
+      <!-- Main -->
+      <main class="col-12 col-md-9 col-lg-10 p-3 p-md-4">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h1 class="page-title">Dividends — Current vs Target (2024)</h1>
+          <span class="badge bg-warning text-dark badge-note">Currency: SAR</span>
+        </div>
+
+        <!-- Inputs -->
+        <div class="card card-lite mb-3">
+          <div class="card-body">
+            <h2 class="h6 mb-3">Inputs</h2>
+            <div class="row g-3">
+              <!-- 7010 -->
+              <div class="col-12">
+                <div class="row g-2 align-items-end">
+                  <div class="col-12 col-md-3">
+                    <label class="form-label">STC (7010) — Current Shares</label>
+                    <input id="c_7010" type="number" min="0" step="1" value="0" class="form-control">
+                  </div>
+                  <div class="col-12 col-md-3">
+                    <label class="form-label">STC (7010) — Target Shares</label>
+                    <input id="t_7010" type="number" min="0" step="1" value="0" class="form-control">
+                  </div>
+                  <div class="col-12 col-md-3">
+                    <label class="form-label">STC (7010) — Market Price (SAR)</label>
+                    <input id="p_7010" type="number" min="0" step="0.01" value="0" class="form-control">
+                  </div>
+                </div>
+              </div>
+              <!-- 7202 -->
+              <div class="col-12">
+                <div class="row g-2 align-items-end">
+                  <div class="col-12 col-md-3">
+                    <label class="form-label">Solutions (7202) — Current Shares</label>
+                    <input id="c_7202" type="number" min="0" step="1" value="100" class="form-control">
+                  </div>
+                  <div class="col-12 col-md-3">
+                    <label class="form-label">Solutions (7202) — Target Shares</label>
+                    <input id="t_7202" type="number" min="0" step="1" value="200" class="form-control">
+                  </div>
+                  <div class="col-12 col-md-3">
+                    <label class="form-label">Solutions (7202) — Market Price (SAR)</label>
+                    <input id="p_7202" type="number" min="0" step="0.01" value="0" class="form-control">
+                  </div>
+                </div>
+              </div>
+              <!-- 4190 -->
+              <div class="col-12">
+                <div class="row g-2 align-items-end">
+                  <div class="col-12 col-md-3">
+                    <label class="form-label">Jarir (4190) — Current Shares</label>
+                    <input id="c_4190" type="number" min="0" step="1" value="0" class="form-control">
+                  </div>
+                  <div class="col-12 col-md-3">
+                    <label class="form-label">Jarir (4190) — Target Shares</label>
+                    <input id="t_4190" type="number" min="0" step="1" value="0" class="form-control">
+                  </div>
+                  <div class="col-12 col-md-3">
+                    <label class="form-label">Jarir (4190) — Market Price (SAR)</label>
+                    <input id="p_4190" type="number" min="0" step="0.01" value="0" class="form-control">
+                  </div>
+                </div>
+              </div>
+              <!-- 2010 -->
+              <div class="col-12">
+                <div class="row g-2 align-items-end">
+                  <div class="col-12 col-md-3">
+                    <label class="form-label">SABIC (2010) — Current Shares</label>
+                    <input id="c_2010" type="number" min="0" step="1" value="0" class="form-control">
+                  </div>
+                  <div class="col-12 col-md-3">
+                    <label class="form-label">SABIC (2010) — Target Shares</label>
+                    <input id="t_2010" type="number" min="0" step="1" value="0" class="form-control">
+                  </div>
+                  <div class="col-12 col-md-3">
+                    <label class="form-label">SABIC (2010) — Market Price (SAR)</label>
+                    <input id="p_2010" type="number" min="0" step="0.01" value="0" class="form-control">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-3 d-flex flex-wrap gap-2">
+              <button id="recalc" class="btn btn-success">Recalculate</button>
+              <button id="downloadCsv" class="btn btn-outline-secondary">Download CSV</button>
+              <span class="ms-auto subtle form-note">
+                Schedule 2024 (distribution dates · DPS): 7010 → 02-Jan(0.40), 20-May(0.40), 02-Jun(0.55), 26-Nov(0.55) ·
+                7202 → 26-Jun(5.00) ·
+                4190 → 16-Apr(0.19), 21-May(0.15), 20-Aug(0.16), 20-Nov(0.23) ·
+                2010 → 04-Mar(1.60), 24-Sep(1.70)
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Investment & Dividend Summary -->
+        <div class="card card-lite mb-3">
+          <div class="card-body">
+            <h2 class="h6 mb-3">Summary — Additional Shares & Investment (based on Market Price)</h2>
+            <div class="table-responsive">
+              <table class="table table-sm align-middle" id="sumTbl">
+                <thead>
+                  <tr>
+                    <th>Ticker</th>
+                    <th class="text-end">Current Shares</th>
+                    <th class="text-end">Target Shares</th>
+                    <th class="text-end">Δ Shares</th>
+                    <th class="text-end">Market Price</th>
+                    <th class="text-end">Investment Needed</th>
+                    <th class="text-end">Annual Div (Current)</th>
+                    <th class="text-end">Annual Div (Target)</th>
+                    <th class="text-end">Δ Annual Div</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                  <tr class="fw-semibold">
+                    <td>Total</td>
+                    <td class="text-end" id="S_cur">0</td>
+                    <td class="text-end" id="S_tar">0</td>
+                    <td class="text-end" id="S_delta">0</td>
+                    <td class="text-end"><span class="subtle">—</span></td>
+                    <td class="text-end" id="INV_total">0.00</td>
+                    <td class="text-end" id="AD_cur">0.00</td>
+                    <td class="text-end" id="AD_tar">0.00</td>
+                    <td class="text-end" id="AD_delta">0.00</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+            <div class="mini subtle">
+              Annual dividend is calculated as <span class="code">sum(DPS in 2024) × shares</span>.
+            </div>
+          </div>
+        </div>
+
+        <!-- Monthly Table -->
+        <div class="card card-lite">
+          <div class="card-body">
+            <h2 class="h6 mb-3">2024 Monthly Dividend — Current vs Target</h2>
+            <div class="table-responsive">
+              <table class="table table-sm align-middle" id="tbl">
+                <thead>
+                  <tr>
+                    <th>Month</th>
+                    <th class="text-end">7010 (Cur)</th>
+                    <th class="text-end">7010 (Tar)</th>
+                    <th class="text-end">Δ</th>
+                    <th class="text-end">7202 (Cur)</th>
+                    <th class="text-end">7202 (Tar)</th>
+                    <th class="text-end">Δ</th>
+                    <th class="text-end">4190 (Cur)</th>
+                    <th class="text-end">4190 (Tar)</th>
+                    <th class="text-end">Δ</th>
+                    <th class="text-end">2010 (Cur)</th>
+                    <th class="text-end">2010 (Tar)</th>
+                    <th class="text-end">Δ</th>
+                    <th class="text-end">Monthly Total (Cur)</th>
+                    <th class="text-end">Monthly Total (Tar)</th>
+                    <th class="text-end">Δ Total</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                  <tr class="fw-semibold">
+                    <td>Yearly Total</td>
+                    <td class="text-end" id="Y_7010_cur">0.00</td>
+                    <td class="text-end" id="Y_7010_tar">0.00</td>
+                    <td class="text-end" id="Y_7010_delta">0.00</td>
+                    <td class="text-end" id="Y_7202_cur">0.00</td>
+                    <td class="text-end" id="Y_7202_tar">0.00</td>
+                    <td class="text-end" id="Y_7202_delta">0.00</td>
+                    <td class="text-end" id="Y_4190_cur">0.00</td>
+                    <td class="text-end" id="Y_4190_tar">0.00</td>
+                    <td class="text-end" id="Y_4190_delta">0.00</td>
+                    <td class="text-end" id="Y_2010_cur">0.00</td>
+                    <td class="text-end" id="Y_2010_tar">0.00</td>
+                    <td class="text-end" id="Y_2010_delta">0.00</td>
+                    <td class="text-end" id="Y_all_cur">0.00</td>
+                    <td class="text-end" id="Y_all_tar">0.00</td>
+                    <td class="text-end" id="Y_all_delta">0.00</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="lib/js/bootstrap.bundle.min.js"></script>
+  <script src="common.js"></script>
+  <script>
+    // === Dividend schedule: 2024 (distribution/payment dates) ===
+    // Each entry: { code, company, date:'YYYY-MM-DD', month:'Jan'..'Dec', dps:number }
+    const dividends2024 = [
+      // 7010 STC — quarterly in 2024
+      {code:'7010', company:'STC',  date:'2024-01-02', month:'Jan', dps:0.40},
+      {code:'7010', company:'STC',  date:'2024-05-20', month:'May', dps:0.40},
+      {code:'7010', company:'STC',  date:'2024-06-02', month:'Jun', dps:0.55},
+      {code:'7010', company:'STC',  date:'2024-11-26', month:'Nov', dps:0.55},
+
+      // 7202 Solutions — FY2023 payout paid in 2024
+      {code:'7202', company:'Solutions', date:'2024-06-26', month:'Jun', dps:5.00},
+
+      // 4190 Jarir — quarterly in 2024
+      {code:'4190', company:'Jarir', date:'2024-04-16', month:'Apr', dps:0.19},
+      {code:'4190', company:'Jarir', date:'2024-05-21', month:'May', dps:0.15},
+      {code:'4190', company:'Jarir', date:'2024-08-20', month:'Aug', dps:0.16},
+      {code:'4190', company:'Jarir', date:'2024-11-20', month:'Nov', dps:0.23},
+
+      // 2010 SABIC — semi-annual in 2024
+      {code:'2010', company:'SABIC', date:'2024-03-04', month:'Mar', dps:1.60},
+      {code:'2010', company:'SABIC', date:'2024-09-24', month:'Sep', dps:1.70},
+    ];
+
+    const CODES = ['7010','7202','4190','2010'];
+    const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    // Build month->code sum of DPS
+    const monthCodeDps = {};
+    for (const m of MONTHS) monthCodeDps[m] = { '7010':0, '7202':0, '4190':0, '2010':0 };
+    for (const p of dividends2024){ monthCodeDps[p.month][p.code] += p.dps; }
+
+    // Annual DPS per code
+    const annualDps = {'7010':0,'7202':0,'4190':0,'2010':0};
+    for (const m of MONTHS){
+      for (const c of CODES) annualDps[c] += monthCodeDps[m][c];
+    }
+
+    const $ = sel => document.querySelector(sel);
+    const fmt = n => n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+
+    function getInputs(){
+      const inNum = id => Number($(id).value||0);
+      return {
+        cur: {
+          '7010': inNum('#c_7010'), '7202': inNum('#c_7202'),
+          '4190': inNum('#c_4190'), '2010': inNum('#c_2010'),
+        },
+        tar: {
+          '7010': inNum('#t_7010'), '7202': inNum('#t_7202'),
+          '4190': inNum('#t_4190'), '2010': inNum('#t_2010'),
+        },
+        price: {
+          '7010': inNum('#p_7010'), '7202': inNum('#p_7202'),
+          '4190': inNum('#p_4190'), '2010': inNum('#p_2010'),
+        }
+      };
+    }
+
+    function recalc(){
+      const {cur, tar, price} = getInputs();
+      const tbody = $('#tbl tbody');
+      tbody.innerHTML = '';
+
+      // Yearly totals
+      const Y = {
+        cur: {'7010':0,'7202':0,'4190':0,'2010':0, all:0},
+        tar: {'7010':0,'7202':0,'4190':0,'2010':0, all:0},
+        dlt: {'7010':0,'7202':0,'4190':0,'2010':0, all:0},
+      };
+
+      // Monthly rows
+      for (const m of MONTHS){
+        const row = {cur:{}, tar:{}, dlt:{}};
+        let mCur=0, mTar=0, mDlt=0;
+
+        for (const c of CODES){
+          const dps = monthCodeDps[m][c];
+          const curVal = cur[c]*dps;
+          const tarVal = tar[c]*dps;
+          const dltVal = (tar[c]-cur[c])*dps;
+
+          row.cur[c]=curVal; row.tar[c]=tarVal; row.dlt[c]=dltVal;
+          mCur += curVal; mTar += tarVal; mDlt += dltVal;
+
+          Y.cur[c]+=curVal; Y.tar[c]+=tarVal; Y.dlt[c]+=dltVal;
+        }
+        Y.cur.all += mCur; Y.tar.all += mTar; Y.dlt.all += mDlt;
+
+        const td = (v)=> `<td class="text-end">${v ? fmt(v) : '<span class="cell-dash">-</span>'}</td>`;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${m}</td>
+          ${td(row.cur['7010'])}${td(row.tar['7010'])}${td(row.dlt['7010'])}
+          ${td(row.cur['7202'])}${td(row.tar['7202'])}${td(row.dlt['7202'])}
+          ${td(row.cur['4190'])}${td(row.tar['4190'])}${td(row.dlt['4190'])}
+          ${td(row.cur['2010'])}${td(row.tar['2010'])}${td(row.dlt['2010'])}
+          ${td(mCur)}${td(mTar)}${td(mDlt)}
+        `;
+        tbody.appendChild(tr);
+      }
+
+      // Fill yearly totals row
+      $('#Y_7010_cur').textContent = fmt(Y.cur['7010']);
+      $('#Y_7010_tar').textContent = fmt(Y.tar['7010']);
+      $('#Y_7010_delta').textContent = fmt(Y.dlt['7010']);
+
+      $('#Y_7202_cur').textContent = fmt(Y.cur['7202']);
+      $('#Y_7202_tar').textContent = fmt(Y.tar['7202']);
+      $('#Y_7202_delta').textContent = fmt(Y.dlt['7202']);
+
+      $('#Y_4190_cur').textContent = fmt(Y.cur['4190']);
+      $('#Y_4190_tar').textContent = fmt(Y.tar['4190']);
+      $('#Y_4190_delta').textContent = fmt(Y.dlt['4190']);
+
+      $('#Y_2010_cur').textContent = fmt(Y.cur['2010']);
+      $('#Y_2010_tar').textContent = fmt(Y.tar['2010']);
+      $('#Y_2010_delta').textContent = fmt(Y.dlt['2010']);
+
+      $('#Y_all_cur').textContent = fmt(Y.cur.all);
+      $('#Y_all_tar').textContent = fmt(Y.tar.all);
+      $('#Y_all_delta').textContent = fmt(Y.dlt.all);
+
+      // Summary table: additional shares & investment; annual dividends
+      const sumBody = $('#sumTbl tbody');
+      sumBody.innerHTML = '';
+      let S_cur=0, S_tar=0, S_delta=0, INV_total=0, AD_cur=0, AD_tar=0, AD_delta=0;
+
+      function addSumRow(tickerLabel, code){
+        const curS = cur[code];
+        const tarS = tar[code];
+        const deltaS = Math.max(0, tarS - curS);
+        const px = price[code] || 0;
+        const inv = deltaS * px;
+        const ad_cur = curS * annualDps[code];
+        const ad_tar = tarS * annualDps[code];
+        const ad_delta = ad_tar - ad_cur;
+
+        S_cur += curS; S_tar += tarS; S_delta += deltaS;
+        INV_total += inv; AD_cur += ad_cur; AD_tar += ad_tar; AD_delta += ad_delta;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${tickerLabel}</td>
+          <td class="text-end">${curS}</td>
+          <td class="text-end">${tarS}</td>
+          <td class="text-end">${deltaS}</td>
+          <td class="text-end">${px ? fmt(px) : '<span class="cell-dash">-</span>'}</td>
+          <td class="text-end">${inv ? fmt(inv) : '<span class="cell-dash">-</span>'}</td>
+          <td class="text-end">${fmt(ad_cur)}</td>
+          <td class="text-end">${fmt(ad_tar)}</td>
+          <td class="text-end">${fmt(ad_delta)}</td>`;
+        sumBody.appendChild(tr);
+      }
+
+      addSumRow('7010', '7010');
+      addSumRow('7202', '7202');
+      addSumRow('4190', '4190');
+      addSumRow('2010', '2010');
+
+      $('#S_cur').textContent = S_cur.toString();
+      $('#S_tar').textContent = S_tar.toString();
+      $('#S_delta').textContent = S_delta.toString();
+      $('#INV_total').textContent = fmt(INV_total);
+      $('#AD_cur').textContent = fmt(AD_cur);
+      $('#AD_tar').textContent = fmt(AD_tar);
+      $('#AD_delta').textContent = fmt(AD_delta);
+    }
+
+    function toCSV(){
+      const {cur, tar, price} = getInputs();
+      const rows = [];
+      rows.push(['Section','Field','7010','7202','4190','2010','Total/Notes']);
+
+      // Annual DPS per share (info)
+      rows.push(['Info','Annual DPS per share',
+        annualDps['7010'].toFixed(2),
+        annualDps['7202'].toFixed(2),
+        annualDps['4190'].toFixed(2),
+        annualDps['2010'].toFixed(2),
+        '']);
+
+      // Summary shares & prices
+      rows.push(['Summary','Current Shares',cur['7010'],cur['7202'],cur['4190'],cur['2010'],'']);
+      rows.push(['Summary','Target Shares',tar['7010'],tar['7202'],tar['4190'],tar['2010'],'']);
+      rows.push(['Summary','Delta Shares',
+        Math.max(0,tar['7010']-cur['7010']),
+        Math.max(0,tar['7202']-cur['7202']),
+        Math.max(0,tar['4190']-cur['4190']),
+        Math.max(0,tar['2010']-cur['2010']),
+        ''
+      ]);
+      rows.push(['Summary','Market Price',
+        (price['7010']||0).toFixed(2),
+        (price['7202']||0).toFixed(2),
+        (price['4190']||0).toFixed(2),
+        (price['2010']||0).toFixed(2),
+        ''
+      ]);
+
+      // Monthly table
+      rows.push([]);
+      rows.push(['Month',
+        '7010 Cur','7010 Tar','7010 Δ',
+        '7202 Cur','7202 Tar','7202 Δ',
+        '4190 Cur','4190 Tar','4190 Δ',
+        '2010 Cur','2010 Tar','2010 Δ',
+        'Total Cur','Total Tar','Total Δ'
+      ]);
+
+      let yCur=0, yTar=0, yDlt=0;
+      for (const m of MONTHS){
+        const r = {};
+        for (const c of CODES){
+          const dps = monthCodeDps[m][c];
+          r[c+'_cur'] = cur[c]*dps;
+          r[c+'_tar'] = tar[c]*dps;
+          r[c+'_dlt'] = (tar[c]-cur[c])*dps;
+        }
+        const mCur = r['7010_cur']+r['7202_cur']+r['4190_cur']+r['2010_cur'];
+        const mTar = r['7010_tar']+r['7202_tar']+r['4190_tar']+r['2010_tar'];
+        const mDlt = mTar - mCur;
+        yCur += mCur; yTar += mTar; yDlt += mDlt;
+
+        rows.push([m,
+          r['7010_cur'].toFixed(2), r['7010_tar'].toFixed(2), r['7010_dlt'].toFixed(2),
+          r['7202_cur'].toFixed(2), r['7202_tar'].toFixed(2), r['7202_dlt'].toFixed(2),
+          r['4190_cur'].toFixed(2), r['4190_tar'].toFixed(2), r['4190_dlt'].toFixed(2),
+          r['2010_cur'].toFixed(2), r['2010_tar'].toFixed(2), r['2010_dlt'].toFixed(2),
+          mCur.toFixed(2), mTar.toFixed(2), mDlt.toFixed(2)
+        ]);
+      }
+      rows.push(['Yearly Total','','','',
+                 '','','','','','','','','',
+                 yCur.toFixed(2), yTar.toFixed(2), yDlt.toFixed(2)]);
+
+      const csv = rows.map(r=>r.join(',')).join('\n');
+      const blob = new Blob([csv], {type:'text/csv'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'dividends_2024_current_vs_target.csv';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    document.getElementById('recalc').addEventListener('click', recalc);
+    document.getElementById('downloadCsv').addEventListener('click', toCSV);
+    recalc(); // initial render
+  </script>
+</body>
+</html>
