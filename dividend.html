@@ -56,16 +56,20 @@
               <!-- 7010 -->
               <div class="col-12">
                 <div class="row g-2 align-items-end">
-                  <div class="col-12 col-md-3">
-                    <label class="form-label">STC (7010) — Current Shares</label>
+                  <div class="col-12 col-md-2">
+                    <label class="form-label">Stock Name (7010)</label>
+                    <input id="name_7010" type="text" placeholder="Enter stock name" value="Stock A" class="form-control">
+                  </div>
+                  <div class="col-12 col-md-2">
+                    <label class="form-label">Current Shares</label>
                     <input id="c_7010" type="number" min="0" step="1" value="0" class="form-control">
                   </div>
-                  <div class="col-12 col-md-3">
-                    <label class="form-label">STC (7010) — Target Shares</label>
+                  <div class="col-12 col-md-2">
+                    <label class="form-label">Target Shares</label>
                     <input id="t_7010" type="number" min="0" step="1" value="0" class="form-control">
                   </div>
-                  <div class="col-12 col-md-3">
-                    <label class="form-label">STC (7010) — Market Price (SAR)</label>
+                  <div class="col-12 col-md-2">
+                    <label class="form-label">Market Price (SAR)</label>
                     <input id="p_7010" type="number" min="0" step="0.01" value="0" class="form-control">
                   </div>
                 </div>
@@ -73,16 +77,20 @@
               <!-- 7202 -->
               <div class="col-12">
                 <div class="row g-2 align-items-end">
-                  <div class="col-12 col-md-3">
-                    <label class="form-label">Solutions (7202) — Current Shares</label>
+                  <div class="col-12 col-md-2">
+                    <label class="form-label">Stock Name (7202)</label>
+                    <input id="name_7202" type="text" placeholder="Enter stock name" value="Stock B" class="form-control">
+                  </div>
+                  <div class="col-12 col-md-2">
+                    <label class="form-label">Current Shares</label>
                     <input id="c_7202" type="number" min="0" step="1" value="100" class="form-control">
                   </div>
-                  <div class="col-12 col-md-3">
-                    <label class="form-label">Solutions (7202) — Target Shares</label>
+                  <div class="col-12 col-md-2">
+                    <label class="form-label">Target Shares</label>
                     <input id="t_7202" type="number" min="0" step="1" value="200" class="form-control">
                   </div>
-                  <div class="col-12 col-md-3">
-                    <label class="form-label">Solutions (7202) — Market Price (SAR)</label>
+                  <div class="col-12 col-md-2">
+                    <label class="form-label">Market Price (SAR)</label>
                     <input id="p_7202" type="number" min="0" step="0.01" value="0" class="form-control">
                   </div>
                 </div>
@@ -90,16 +98,20 @@
               <!-- 4190 -->
               <div class="col-12">
                 <div class="row g-2 align-items-end">
-                  <div class="col-12 col-md-3">
-                    <label class="form-label">Jarir (4190) — Current Shares</label>
+                  <div class="col-12 col-md-2">
+                    <label class="form-label">Stock Name (4190)</label>
+                    <input id="name_4190" type="text" placeholder="Enter stock name" value="Stock C" class="form-control">
+                  </div>
+                  <div class="col-12 col-md-2">
+                    <label class="form-label">Current Shares</label>
                     <input id="c_4190" type="number" min="0" step="1" value="0" class="form-control">
                   </div>
-                  <div class="col-12 col-md-3">
-                    <label class="form-label">Jarir (4190) — Target Shares</label>
+                  <div class="col-12 col-md-2">
+                    <label class="form-label">Target Shares</label>
                     <input id="t_4190" type="number" min="0" step="1" value="0" class="form-control">
                   </div>
-                  <div class="col-12 col-md-3">
-                    <label class="form-label">Jarir (4190) — Market Price (SAR)</label>
+                  <div class="col-12 col-md-2">
+                    <label class="form-label">Market Price (SAR)</label>
                     <input id="p_4190" type="number" min="0" step="0.01" value="0" class="form-control">
                   </div>
                 </div>
@@ -107,16 +119,20 @@
               <!-- 2010 -->
               <div class="col-12">
                 <div class="row g-2 align-items-end">
-                  <div class="col-12 col-md-3">
-                    <label class="form-label">SABIC (2010) — Current Shares</label>
+                  <div class="col-12 col-md-2">
+                    <label class="form-label">Stock Name (2010)</label>
+                    <input id="name_2010" type="text" placeholder="Enter stock name" value="Stock D" class="form-control">
+                  </div>
+                  <div class="col-12 col-md-2">
+                    <label class="form-label">Current Shares</label>
                     <input id="c_2010" type="number" min="0" step="1" value="0" class="form-control">
                   </div>
-                  <div class="col-12 col-md-3">
-                    <label class="form-label">SABIC (2010) — Target Shares</label>
+                  <div class="col-12 col-md-2">
+                    <label class="form-label">Target Shares</label>
                     <input id="t_2010" type="number" min="0" step="1" value="0" class="form-control">
                   </div>
-                  <div class="col-12 col-md-3">
-                    <label class="form-label">SABIC (2010) — Market Price (SAR)</label>
+                  <div class="col-12 col-md-2">
+                    <label class="form-label">Market Price (SAR)</label>
                     <input id="p_2010" type="number" min="0" step="0.01" value="0" class="form-control">
                   </div>
                 </div>
@@ -238,26 +254,26 @@
   <script src="common.js"></script>
   <script>
     // === Dividend schedule: 2024 (distribution/payment dates) ===
-    // Each entry: { code, company, date:'YYYY-MM-DD', month:'Jan'..'Dec', dps:number }
+    // Each entry: { code, date:'YYYY-MM-DD', month:'Jan'..'Dec', dps:number }
     const dividends2024 = [
-      // 7010 STC — quarterly in 2024
-      {code:'7010', company:'STC',  date:'2024-01-02', month:'Jan', dps:0.40},
-      {code:'7010', company:'STC',  date:'2024-05-20', month:'May', dps:0.40},
-      {code:'7010', company:'STC',  date:'2024-06-02', month:'Jun', dps:0.55},
-      {code:'7010', company:'STC',  date:'2024-11-26', month:'Nov', dps:0.55},
+      // Stock Code 7010 — quarterly in 2024
+      {code:'7010', date:'2024-01-02', month:'Jan', dps:0.40},
+      {code:'7010', date:'2024-05-20', month:'May', dps:0.40},
+      {code:'7010', date:'2024-06-02', month:'Jun', dps:0.55},
+      {code:'7010', date:'2024-11-26', month:'Nov', dps:0.55},
 
-      // 7202 Solutions — FY2023 payout paid in 2024
-      {code:'7202', company:'Solutions', date:'2024-06-26', month:'Jun', dps:5.00},
+      // Stock Code 7202 — FY2023 payout paid in 2024
+      {code:'7202', date:'2024-06-26', month:'Jun', dps:5.00},
 
-      // 4190 Jarir — quarterly in 2024
-      {code:'4190', company:'Jarir', date:'2024-04-16', month:'Apr', dps:0.19},
-      {code:'4190', company:'Jarir', date:'2024-05-21', month:'May', dps:0.15},
-      {code:'4190', company:'Jarir', date:'2024-08-20', month:'Aug', dps:0.16},
-      {code:'4190', company:'Jarir', date:'2024-11-20', month:'Nov', dps:0.23},
+      // Stock Code 4190 — quarterly in 2024
+      {code:'4190', date:'2024-04-16', month:'Apr', dps:0.19},
+      {code:'4190', date:'2024-05-21', month:'May', dps:0.15},
+      {code:'4190', date:'2024-08-20', month:'Aug', dps:0.16},
+      {code:'4190', date:'2024-11-20', month:'Nov', dps:0.23},
 
-      // 2010 SABIC — semi-annual in 2024
-      {code:'2010', company:'SABIC', date:'2024-03-04', month:'Mar', dps:1.60},
-      {code:'2010', company:'SABIC', date:'2024-09-24', month:'Sep', dps:1.70},
+      // Stock Code 2010 — semi-annual in 2024
+      {code:'2010', date:'2024-03-04', month:'Mar', dps:1.60},
+      {code:'2010', date:'2024-09-24', month:'Sep', dps:1.70},
     ];
 
     const CODES = ['7010','7202','4190','2010'];
@@ -279,6 +295,7 @@
 
     function getInputs(){
       const inNum = id => Number($(id).value||0);
+      const inStr = id => $(id).value || '';
       return {
         cur: {
           '7010': inNum('#c_7010'), '7202': inNum('#c_7202'),
@@ -291,12 +308,29 @@
         price: {
           '7010': inNum('#p_7010'), '7202': inNum('#p_7202'),
           '4190': inNum('#p_4190'), '2010': inNum('#p_2010'),
+        },
+        names: {
+          '7010': inStr('#name_7010'), '7202': inStr('#name_7202'),
+          '4190': inStr('#name_4190'), '2010': inStr('#name_2010'),
         }
       };
     }
 
     function recalc(){
-      const {cur, tar, price} = getInputs();
+      const {cur, tar, price, names} = getInputs();
+      
+      // Update table headers with user-entered stock names
+      const monthlyHeaders = document.querySelectorAll('#tbl thead th');
+      if (monthlyHeaders.length >= 16) {
+        monthlyHeaders[1].textContent = `${names['7010'] || '7010'} (Cur)`;
+        monthlyHeaders[2].textContent = `${names['7010'] || '7010'} (Tar)`;
+        monthlyHeaders[4].textContent = `${names['7202'] || '7202'} (Cur)`;
+        monthlyHeaders[5].textContent = `${names['7202'] || '7202'} (Tar)`;
+        monthlyHeaders[7].textContent = `${names['4190'] || '4190'} (Cur)`;
+        monthlyHeaders[8].textContent = `${names['4190'] || '4190'} (Tar)`;
+        monthlyHeaders[10].textContent = `${names['2010'] || '2010'} (Cur)`;
+        monthlyHeaders[11].textContent = `${names['2010'] || '2010'} (Tar)`;
+      }
       const tbody = $('#tbl tbody');
       tbody.innerHTML = '';
 
@@ -391,10 +425,10 @@
         sumBody.appendChild(tr);
       }
 
-      addSumRow('7010', '7010');
-      addSumRow('7202', '7202');
-      addSumRow('4190', '4190');
-      addSumRow('2010', '2010');
+      addSumRow(names['7010'] || '7010', '7010');
+      addSumRow(names['7202'] || '7202', '7202');
+      addSumRow(names['4190'] || '4190', '4190');
+      addSumRow(names['2010'] || '2010', '2010');
 
       $('#S_cur').textContent = S_cur.toString();
       $('#S_tar').textContent = S_tar.toString();
@@ -406,9 +440,14 @@
     }
 
     function toCSV(){
-      const {cur, tar, price} = getInputs();
+      const {cur, tar, price, names} = getInputs();
       const rows = [];
-      rows.push(['Section','Field','7010','7202','4190','2010','Total/Notes']);
+      rows.push(['Section','Field',
+        names['7010'] || '7010',
+        names['7202'] || '7202',
+        names['4190'] || '4190',
+        names['2010'] || '2010',
+        'Total/Notes']);
 
       // Annual DPS per share (info)
       rows.push(['Info','Annual DPS per share',
