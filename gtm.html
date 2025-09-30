@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>GTM Calculator (USD-INR)</title>
+  <title>GTM Calculator</title>
 
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="lib/css/bootstrap4.6.1.min.css">
@@ -25,29 +25,29 @@
 
   <script>
     /****************************************
-     * GTM CALCULATOR (USD)
+     * GTM CALCULATOR
      ****************************************/
     function calcluate(){
-      const usd_amount_to_send    = parseFloat(document.getElementById('usd_amount_to_send').value);
-      const usd_to_inr            = parseFloat(document.getElementById('usd_to_inr').value);
-      const gold_rate_10g_usd     = parseFloat(document.getElementById('gold_rate_10g_usd').value);
-      const gold_rate_10g_ind_inr = parseFloat(document.getElementById('gold_rate_10g_ind_inr').value);
-      if (isNaN(usd_amount_to_send) || isNaN(usd_to_inr) || isNaN(gold_rate_10g_usd) || isNaN(gold_rate_10g_ind_inr)){
-        alert('Please provide valid input (USD).'); return;
+      const source_amount_to_send    = parseFloat(document.getElementById('source_amount_to_send').value);
+      const source_to_target_rate    = parseFloat(document.getElementById('source_to_target_rate').value);
+      const gold_rate_10g_source     = parseFloat(document.getElementById('gold_rate_10g_source').value);
+      const gold_rate_10g_target     = parseFloat(document.getElementById('gold_rate_10g_target').value);
+      if (isNaN(source_amount_to_send) || isNaN(source_to_target_rate) || isNaN(gold_rate_10g_source) || isNaN(gold_rate_10g_target)){
+        alert('Please provide valid input.'); return;
       }
-      const gold_weight           = (usd_amount_to_send / gold_rate_10g_usd).toFixed(2);
-      const purchased_gold_value  = gold_weight * gold_rate_10g_ind_inr;
-      const exchanged_amount_in_inr = usd_amount_to_send * usd_to_inr;
+      const gold_weight           = (source_amount_to_send / gold_rate_10g_source).toFixed(2);
+      const purchased_gold_value  = gold_weight * gold_rate_10g_target;
+      const exchanged_amount_in_target = source_amount_to_send * source_to_target_rate;
       let output = '<table class="table table-striped">';
       output += '<tr><td>Gold purchase capacity (10g units)</td><td>'+ gold_weight +'</td></tr>';
-      output += '<tr><td>Gold value in INR</td><td>'+ purchased_gold_value +'</td></tr>';
-      output += '<tr><td>Exchanged INR amount</td><td>'+ exchanged_amount_in_inr +'</td></tr>';
-      output += '<tr><td>Difference</td><td>'+(purchased_gold_value - exchanged_amount_in_inr)+'</td></tr>';
+      output += '<tr><td>Gold value in Target Currency</td><td>'+ purchased_gold_value +'</td></tr>';
+      output += '<tr><td>Exchanged Target Currency amount</td><td>'+ exchanged_amount_in_target +'</td></tr>';
+      output += '<tr><td>Difference</td><td>'+(purchased_gold_value - exchanged_amount_in_target)+'</td></tr>';
       output += '</table>';
       document.getElementById("output").innerHTML = output;
     }
     function clearFormGTM(){
-      ['usd_amount_to_send','usd_to_inr','gold_rate_10g_usd','gold_rate_10g_ind_inr'].forEach(id=>document.getElementById(id).value='');
+      ['source_amount_to_send','source_to_target_rate','gold_rate_10g_source','gold_rate_10g_target'].forEach(id=>document.getElementById(id).value='');
       document.getElementById("output").innerHTML = '';
     }
   </script>
@@ -70,11 +70,11 @@
     </div>
     <div class="col-12 col-md-9 col-lg-9">
       <div class="section">
-        <div class="card mt-3"><div class="card-header">GTM (USD)</div><div class="card-body">
-          <div class="form-group"><label for="usd_to_inr">USD-INR:</label><input class="form-control" id="usd_to_inr"></div>
-          <div class="form-group"><label for="usd_amount_to_send">Amount to Send (USD):</label><input class="form-control" id="usd_amount_to_send"></div>
-          <div class="form-group"><label for="gold_rate_10g_usd">Gold Rate 10g (USD):</label><input class="form-control" id="gold_rate_10g_usd"></div>
-          <div class="form-group"><label for="gold_rate_10g_ind_inr">Gold Rate 10g (INR):</label><input class="form-control" id="gold_rate_10g_ind_inr"></div>
+        <div class="card mt-3"><div class="card-header">GTM Calculator</div><div class="card-body">
+          <div class="form-group"><label for="source_to_target_rate">Source to Target Currency Rate:</label><input class="form-control" id="source_to_target_rate"></div>
+          <div class="form-group"><label for="source_amount_to_send">Amount to Send (Source Currency):</label><input class="form-control" id="source_amount_to_send"></div>
+          <div class="form-group"><label for="gold_rate_10g_source">Gold Rate 10g (Source Currency):</label><input class="form-control" id="gold_rate_10g_source"></div>
+          <div class="form-group"><label for="gold_rate_10g_target">Gold Rate 10g (Target Currency):</label><input class="form-control" id="gold_rate_10g_target"></div>
         </div><div class="card-footer">
           <button class="btn btn-primary" onclick="calcluate()">Submit</button>
           <button class="btn btn-secondary" onclick="clearFormGTM()">Clear</button>
