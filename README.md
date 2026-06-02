@@ -8,6 +8,7 @@ A collection of useful financial calculators for investors and traders.
 - **Stock Averaging**: Calculate average stock prices with multiple purchases
 - **Stock Average 2**: Enhanced stock averaging with additional features
 - **Trade Calculator**: Evaluate whether to sell one stock and buy another considering current prices, dividends and future price expectations
+- **Best Transfer Route**: Compare two transfer routes and find which one gives the highest destination amount
 
 ## Usage
 
@@ -17,6 +18,7 @@ Open any of the HTML files in your browser to use the calculators:
 - `stock-average.html` - Stock Average Calculator
 - `stock-average2.html` - Enhanced Stock Average Calculator
 - `trade-calculator.html` - Trade Calculator (with future price prediction)
+- `best-transfer-route.html` - Best Transfer Route Calculator
 
 ## Technology Stack
 
