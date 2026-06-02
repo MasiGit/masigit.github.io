@@ -25,43 +25,79 @@
     }
 
     function calculateBestTransferRoute() {
+      const option1Name = document.getElementById('option1_name').value.trim() || 'Route 1';
       const option1Source = parseFloat(document.getElementById('option1_source_amount').value) || 0;
       const option1Fee = parseFloat(document.getElementById('option1_transfer_fee').value) || 0;
       const option1Rate = parseFloat(document.getElementById('option1_exchange_rate').value) || 0;
 
+      const option2Name = document.getElementById('option2_name').value.trim() || 'Route 2';
       const option2Source = parseFloat(document.getElementById('option2_source_amount').value) || 0;
       const option2Fee = parseFloat(document.getElementById('option2_transfer_fee').value) || 0;
       const option2Rate = parseFloat(document.getElementById('option2_exchange_rate').value) || 0;
 
       const option1Destination = calculateDestination(option1Source, option1Fee, option1Rate);
       const option2Destination = calculateDestination(option2Source, option2Fee, option2Rate);
+      const destinationDifference = Math.abs(option1Destination - option2Destination);
       const tieThreshold = 0.01;
-      const isTie = Math.abs(option1Destination - option2Destination) < tieThreshold;
+      const isTie = destinationDifference < tieThreshold;
 
       const option1Class = isTie ? 'table-warning' : (option1Destination > option2Destination ? 'table-success' : '');
       const option2Class = isTie ? 'table-warning' : (option2Destination > option1Destination ? 'table-success' : '');
 
       const bestRouteText = isTie
-        ? 'Both routes provide the same destination amount.'
+        ? `Both routes provide nearly the same destination amount. Difference: ${destinationDifference.toFixed(2)}.`
         : option1Destination > option2Destination
-          ? 'Route 1 gives the highest destination amount.'
-          : 'Route 2 gives the highest destination amount.';
+          ? `${option1Name} gives the highest destination amount. Difference vs ${option2Name}: ${destinationDifference.toFixed(2)}.`
+          : `${option2Name} gives the highest destination amount. Difference vs ${option1Name}: ${destinationDifference.toFixed(2)}.`;
 
-      let html = '<table class="table table-striped">';
-      html += '<thead><tr><th>Route</th><th>Destination Amount</th></tr></thead><tbody>';
-      html += `<tr class="${option1Class}"><td>Route 1</td><td>${option1Destination.toFixed(2)}</td></tr>`;
-      html += `<tr class="${option2Class}"><td>Route 2</td><td>${option2Destination.toFixed(2)}</td></tr>`;
-      html += '</tbody></table>';
-      html += `<div class="alert alert-info mb-0">${bestRouteText}</div>`;
+      const output = document.getElementById('transfer_route_output');
+      output.innerHTML = '';
 
-      document.getElementById('transfer_route_output').innerHTML = html;
+      const table = document.createElement('table');
+      table.className = 'table table-striped';
+
+      const thead = document.createElement('thead');
+      const headRow = document.createElement('tr');
+      const routeHeader = document.createElement('th');
+      routeHeader.textContent = 'Route';
+      const destinationHeader = document.createElement('th');
+      destinationHeader.textContent = 'Destination Amount';
+      headRow.appendChild(routeHeader);
+      headRow.appendChild(destinationHeader);
+      thead.appendChild(headRow);
+      table.appendChild(thead);
+
+      const tbody = document.createElement('tbody');
+      [
+        { className: option1Class, name: option1Name, amount: option1Destination },
+        { className: option2Class, name: option2Name, amount: option2Destination }
+      ].forEach(route => {
+        const row = document.createElement('tr');
+        row.className = route.className;
+        const routeCell = document.createElement('td');
+        routeCell.textContent = route.name;
+        const amountCell = document.createElement('td');
+        amountCell.textContent = route.amount.toFixed(2);
+        row.appendChild(routeCell);
+        row.appendChild(amountCell);
+        tbody.appendChild(row);
+      });
+      table.appendChild(tbody);
+      output.appendChild(table);
+
+      const alert = document.createElement('div');
+      alert.className = 'alert alert-info mb-0';
+      alert.textContent = bestRouteText;
+      output.appendChild(alert);
     }
 
     function clearBestTransferRoute() {
       [
+        'option1_name',
         'option1_source_amount',
         'option1_transfer_fee',
         'option1_exchange_rate',
+        'option2_name',
         'option2_source_amount',
         'option2_transfer_fee',
         'option2_exchange_rate'
@@ -93,12 +129,14 @@
           <div class="row">
             <div class="col-md-6">
               <h5>Route 1</h5>
+              <div class="form-group"><label for="option1_name">Route Name:</label><input class="form-control" id="option1_name" type="text" placeholder="Route 1"></div>
               <div class="form-group"><label for="option1_source_amount">Source Amount:</label><input class="form-control" id="option1_source_amount" type="number" step="any" min="0"></div>
               <div class="form-group"><label for="option1_transfer_fee">Transfer Fee:</label><input class="form-control" id="option1_transfer_fee" type="number" step="any" min="0"></div>
               <div class="form-group"><label for="option1_exchange_rate">Exchange Rate:</label><input class="form-control" id="option1_exchange_rate" type="number" step="any" min="0"></div>
             </div>
             <div class="col-md-6">
               <h5>Route 2</h5>
+              <div class="form-group"><label for="option2_name">Route Name:</label><input class="form-control" id="option2_name" type="text" placeholder="Route 2"></div>
               <div class="form-group"><label for="option2_source_amount">Source Amount:</label><input class="form-control" id="option2_source_amount" type="number" step="any" min="0"></div>
               <div class="form-group"><label for="option2_transfer_fee">Transfer Fee:</label><input class="form-control" id="option2_transfer_fee" type="number" step="any" min="0"></div>
               <div class="form-group"><label for="option2_exchange_rate">Exchange Rate:</label><input class="form-control" id="option2_exchange_rate" type="number" step="any" min="0"></div>
