@@ -31,11 +31,12 @@
 
       const option1Destination = Math.max(option1Source - option1Fee, 0) * option1Rate;
       const option2Destination = Math.max(option2Source - option2Fee, 0) * option2Rate;
+      const isTie = Math.abs(option1Destination - option2Destination) < 0.01;
 
-      const option1Class = option1Destination > option2Destination ? 'table-success' : '';
-      const option2Class = option2Destination > option1Destination ? 'table-success' : '';
+      const option1Class = isTie ? 'table-warning' : (option1Destination > option2Destination ? 'table-success' : '');
+      const option2Class = isTie ? 'table-warning' : (option2Destination > option1Destination ? 'table-success' : '');
 
-      const bestRouteText = option1Destination === option2Destination
+      const bestRouteText = isTie
         ? 'Both routes provide the same destination amount.'
         : option1Destination > option2Destination
           ? 'Route 1 gives the highest destination amount.'
