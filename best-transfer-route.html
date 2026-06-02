@@ -31,7 +31,8 @@
 
       const option1Destination = Math.max(option1Source - option1Fee, 0) * option1Rate;
       const option2Destination = Math.max(option2Source - option2Fee, 0) * option2Rate;
-      const isTie = Math.abs(option1Destination - option2Destination) < 0.01;
+      const TIE_THRESHOLD = 0.01;
+      const isTie = Math.abs(option1Destination - option2Destination) < TIE_THRESHOLD;
 
       const option1Class = isTie ? 'table-warning' : (option1Destination > option2Destination ? 'table-success' : '');
       const option2Class = isTie ? 'table-warning' : (option2Destination > option1Destination ? 'table-success' : '');
