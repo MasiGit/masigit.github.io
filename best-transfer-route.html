@@ -20,6 +20,10 @@
   <script src="lib/scripts/jquery.slim.min.js"></script>
   <script src="lib/scripts/bootstrap4.6.1.min.js"></script>
   <script>
+    function calculateDestination(sourceAmount, transferFee, exchangeRate) {
+      return Math.max(sourceAmount - transferFee, 0) * exchangeRate;
+    }
+
     function calculateBestTransferRoute() {
       const option1Source = parseFloat(document.getElementById('option1_source_amount').value) || 0;
       const option1Fee = parseFloat(document.getElementById('option1_transfer_fee').value) || 0;
@@ -29,10 +33,10 @@
       const option2Fee = parseFloat(document.getElementById('option2_transfer_fee').value) || 0;
       const option2Rate = parseFloat(document.getElementById('option2_exchange_rate').value) || 0;
 
-      const option1Destination = Math.max(option1Source - option1Fee, 0) * option1Rate;
-      const option2Destination = Math.max(option2Source - option2Fee, 0) * option2Rate;
-      const TIE_THRESHOLD = 0.01;
-      const isTie = Math.abs(option1Destination - option2Destination) < TIE_THRESHOLD;
+      const option1Destination = calculateDestination(option1Source, option1Fee, option1Rate);
+      const option2Destination = calculateDestination(option2Source, option2Fee, option2Rate);
+      const tieThreshold = 0.01;
+      const isTie = Math.abs(option1Destination - option2Destination) < tieThreshold;
 
       const option1Class = isTie ? 'table-warning' : (option1Destination > option2Destination ? 'table-success' : '');
       const option2Class = isTie ? 'table-warning' : (option2Destination > option1Destination ? 'table-success' : '');
