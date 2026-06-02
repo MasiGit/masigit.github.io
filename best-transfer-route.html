@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Best Transfer Route</title>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="lib/css/bootstrap4.6.1.min.css">
+  
+  <!-- Font Awesome Icons -->
+  <link 
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+  />
+
+  <!-- Common CSS -->
+  <link rel="stylesheet" href="common.css">
+
+  <!-- jQuery & Bootstrap JS -->
+  <script src="lib/scripts/jquery.slim.min.js"></script>
+  <script src="lib/scripts/bootstrap4.6.1.min.js"></script>
+  <script>
+    function calculateDestination(sourceAmount, transferFee, exchangeRate) {
+      return Math.max(sourceAmount - transferFee, 0) * exchangeRate;
+    }
+
+    function calculateBestTransferRoute() {
+      const option1Source = parseFloat(document.getElementById('option1_source_amount').value) || 0;
+      const option1Fee = parseFloat(document.getElementById('option1_transfer_fee').value) || 0;
+      const option1Rate = parseFloat(document.getElementById('option1_exchange_rate').value) || 0;
+
+      const option2Source = parseFloat(document.getElementById('option2_source_amount').value) || 0;
+      const option2Fee = parseFloat(document.getElementById('option2_transfer_fee').value) || 0;
+      const option2Rate = parseFloat(document.getElementById('option2_exchange_rate').value) || 0;
+
+      const option1Destination = calculateDestination(option1Source, option1Fee, option1Rate);
+      const option2Destination = calculateDestination(option2Source, option2Fee, option2Rate);
+      const tieThreshold = 0.01;
+      const isTie = Math.abs(option1Destination - option2Destination) < tieThreshold;
+
+      const option1Class = isTie ? 'table-warning' : (option1Destination > option2Destination ? 'table-success' : '');
+      const option2Class = isTie ? 'table-warning' : (option2Destination > option1Destination ? 'table-success' : '');
+
+      const bestRouteText = isTie
+        ? 'Both routes provide the same destination amount.'
+        : option1Destination > option2Destination
+          ? 'Route 1 gives the highest destination amount.'
+          : 'Route 2 gives the highest destination amount.';
+
+      let html = '<table class="table table-striped">';
+      html += '<thead><tr><th>Route</th><th>Destination Amount</th></tr></thead><tbody>';
+      html += `<tr class="${option1Class}"><td>Route 1</td><td>${option1Destination.toFixed(2)}</td></tr>`;
+      html += `<tr class="${option2Class}"><td>Route 2</td><td>${option2Destination.toFixed(2)}</td></tr>`;
+      html += '</tbody></table>';
+      html += `<div class="alert alert-info mb-0">${bestRouteText}</div>`;
+
+      document.getElementById('transfer_route_output').innerHTML = html;
+    }
+
+    function clearBestTransferRoute() {
+      [
+        'option1_source_amount',
+        'option1_transfer_fee',
+        'option1_exchange_rate',
+        'option2_source_amount',
+        'option2_transfer_fee',
+        'option2_exchange_rate'
+      ].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('transfer_route_output').innerHTML = '';
+    }
+  </script>
+</head>
+<body>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12 col-md-3 col-lg-3">
+      <div class="card mt-3">
+        <div class="card-header main-header"><i class="fas fa-bars"></i> Menu</div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><a href="gtm.html"><i class="fas fa-coins"></i> GTM</a></li>
+          <li class="list-group-item"><a href="stock-average.html"><i class="fas fa-chart-line"></i> Stock Average</a></li>
+          <li class="list-group-item"><a href="stock-average2.html"><i class="fas fa-calculator"></i> Stock Average 2</a></li>
+          <li class="list-group-item"><a href="trade-calculator.html"><i class="fas fa-exchange-alt"></i> Trade Calculator</a></li>
+          <li class="list-group-item active"><a href="best-transfer-route.html" class="text-dark"><i class="fas fa-route"></i> Best Transfer Route</a></li>
+          <li class="list-group-item"><a href="dividend.html"><i class="fas fa-chart-pie"></i> Dividends</a></li>
+          <li class="list-group-item"><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-12 col-md-9 col-lg-9">
+      <div class="section">
+        <div class="card mt-3"><div class="card-header">Best Transfer Route</div><div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <h5>Route 1</h5>
+              <div class="form-group"><label for="option1_source_amount">Source Amount:</label><input class="form-control" id="option1_source_amount" type="number" step="any" min="0"></div>
+              <div class="form-group"><label for="option1_transfer_fee">Transfer Fee:</label><input class="form-control" id="option1_transfer_fee" type="number" step="any" min="0"></div>
+              <div class="form-group"><label for="option1_exchange_rate">Exchange Rate:</label><input class="form-control" id="option1_exchange_rate" type="number" step="any" min="0"></div>
+            </div>
+            <div class="col-md-6">
+              <h5>Route 2</h5>
+              <div class="form-group"><label for="option2_source_amount">Source Amount:</label><input class="form-control" id="option2_source_amount" type="number" step="any" min="0"></div>
+              <div class="form-group"><label for="option2_transfer_fee">Transfer Fee:</label><input class="form-control" id="option2_transfer_fee" type="number" step="any" min="0"></div>
+              <div class="form-group"><label for="option2_exchange_rate">Exchange Rate:</label><input class="form-control" id="option2_exchange_rate" type="number" step="any" min="0"></div>
+            </div>
+          </div>
+        </div><div class="card-footer">
+          <button class="btn btn-primary" onclick="calculateBestTransferRoute()">Calculate</button>
+          <button class="btn btn-secondary" onclick="clearBestTransferRoute()">Clear</button>
+        </div></div>
+        <div class="card mt-3"><div class="card-header">Results</div><div class="card-body"><div id="transfer_route_output"></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
