@@ -20,15 +20,6 @@
   <script src="lib/scripts/jquery.slim.min.js"></script>
   <script src="lib/scripts/bootstrap4.6.1.min.js"></script>
   <script>
-    function escapeHtml(value) {
-      return String(value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
-
     function calculateDestination(sourceAmount, transferFee, exchangeRate) {
       return Math.max(sourceAmount - transferFee, 0) * exchangeRate;
     }
@@ -44,8 +35,6 @@
       const option2Fee = parseFloat(document.getElementById('option2_transfer_fee').value) || 0;
       const option2Rate = parseFloat(document.getElementById('option2_exchange_rate').value) || 0;
 
-      const safeOption1Name = escapeHtml(option1Name);
-      const safeOption2Name = escapeHtml(option2Name);
       const option1Destination = calculateDestination(option1Source, option1Fee, option1Rate);
       const option2Destination = calculateDestination(option2Source, option2Fee, option2Rate);
       const destinationDifference = Math.abs(option1Destination - option2Destination);
@@ -58,17 +47,48 @@
       const bestRouteText = isTie
         ? `Both routes provide nearly the same destination amount. Difference: ${destinationDifference.toFixed(2)}.`
         : option1Destination > option2Destination
-          ? `${safeOption1Name} gives the highest destination amount. Difference vs ${safeOption2Name}: ${destinationDifference.toFixed(2)}.`
-          : `${safeOption2Name} gives the highest destination amount. Difference vs ${safeOption1Name}: ${destinationDifference.toFixed(2)}.`;
+          ? `${option1Name} gives the highest destination amount. Difference vs ${option2Name}: ${destinationDifference.toFixed(2)}.`
+          : `${option2Name} gives the highest destination amount. Difference vs ${option1Name}: ${destinationDifference.toFixed(2)}.`;
 
-      let html = '<table class="table table-striped">';
-      html += '<thead><tr><th>Route</th><th>Destination Amount</th></tr></thead><tbody>';
-      html += `<tr class="${option1Class}"><td>${safeOption1Name}</td><td>${option1Destination.toFixed(2)}</td></tr>`;
-      html += `<tr class="${option2Class}"><td>${safeOption2Name}</td><td>${option2Destination.toFixed(2)}</td></tr>`;
-      html += '</tbody></table>';
-      html += `<div class="alert alert-info mb-0">${bestRouteText}</div>`;
+      const output = document.getElementById('transfer_route_output');
+      output.innerHTML = '';
 
-      document.getElementById('transfer_route_output').innerHTML = html;
+      const table = document.createElement('table');
+      table.className = 'table table-striped';
+
+      const thead = document.createElement('thead');
+      const headRow = document.createElement('tr');
+      const routeHeader = document.createElement('th');
+      routeHeader.textContent = 'Route';
+      const destinationHeader = document.createElement('th');
+      destinationHeader.textContent = 'Destination Amount';
+      headRow.appendChild(routeHeader);
+      headRow.appendChild(destinationHeader);
+      thead.appendChild(headRow);
+      table.appendChild(thead);
+
+      const tbody = document.createElement('tbody');
+      [
+        { className: option1Class, name: option1Name, amount: option1Destination },
+        { className: option2Class, name: option2Name, amount: option2Destination }
+      ].forEach(route => {
+        const row = document.createElement('tr');
+        row.className = route.className;
+        const routeCell = document.createElement('td');
+        routeCell.textContent = route.name;
+        const amountCell = document.createElement('td');
+        amountCell.textContent = route.amount.toFixed(2);
+        row.appendChild(routeCell);
+        row.appendChild(amountCell);
+        tbody.appendChild(row);
+      });
+      table.appendChild(tbody);
+      output.appendChild(table);
+
+      const alert = document.createElement('div');
+      alert.className = 'alert alert-info mb-0';
+      alert.textContent = bestRouteText;
+      output.appendChild(alert);
     }
 
     function clearBestTransferRoute() {
